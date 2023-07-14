@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "dev": "cd playground && vite dev"
+    "dev": "cd playground && vite dev",
+    "docs:generate": "tsx scripts/export_docs.ts"
   },
   "keywords": [],
   "author": "",
