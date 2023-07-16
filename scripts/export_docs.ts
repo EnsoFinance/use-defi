@@ -8,7 +8,7 @@ const docsDir = path.join(rootDir, 'docs');
 
 (async () => {
   // Initialize output dir
-  fs.mkdirSync(docsDir);
+  fs.mkdirSync(docsDir, { recursive: true });
 
   // Find all mdx files
   const mdxFiles = await fg('hooks/**/*.mdx', {
