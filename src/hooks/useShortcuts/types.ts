@@ -1,14 +1,14 @@
 import { Address } from 'viem';
 
-import { LoadingState, ProtocolName, Shortcut } from '../../types';
+import { LoadingState, MetaPosition, ProtocolName, Shortcut } from '../../types';
 
 export type UseShortcutPayload = {
-  data: Shortcut[];
+  data: MetaPosition[];
   status: LoadingState;
 };
 
 export type UseShortcutArgs = {
   chain?: number;
   token?: Address;
-  protocol: ProtocolName;
+  protocol?: ProtocolName;
 };

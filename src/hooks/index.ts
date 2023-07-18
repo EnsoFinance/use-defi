@@ -1,2 +1,2 @@
-export * from './usePositions';
-export * from './useExecutePosition';
+export * from './useShortcuts';
+export * from './useExecuteShortcut';

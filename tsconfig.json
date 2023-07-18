@@ -27,7 +27,7 @@
     "outDir": "dist"
   },
   "include": [
-    "hooks"
+    "src"
   ],
   "exclude": [
     "node_modules",

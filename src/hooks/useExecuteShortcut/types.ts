@@ -1,32 +1,35 @@
+import { Provider } from '@ethersproject/providers';
+import { RouteQueryResponse } from 'src/utils/queries';
 import { Address } from 'viem';
+import { WalletClient } from 'wagmi';
 
-import { BigNumberish, LoadingState, ProtocolName } from '../../types';
+import { BigNumberish, LoadingState, MetaPosition, ProtocolName } from '../../types';
 
 export type UseExecuteShortcutPayload = {
   mutate: () => any;
   status: LoadingState;
-  simulationPayload?: SimulationPayload;
+  executionDetails?: RouteQueryResponse;
 };
 
-export type SimulationPayload = {
-  amountOut: string;
-  gas: number;
-  priceImpact: number;
-  hops: Hop[];
-};
+// export type SimulationPayload = {
+//   amountOut: string;
+//   gas: number;
+//   priceImpact: number;
+//   hops: Hop[];
+// };
 
 export type UseExecuteShortcutArgs = {
-  executor: Address;
-  positionId: string;
+  executor?: Address;
+  shortcut: MetaPosition | undefined;
   options?: UseExecuteShortcutArgsOptions;
 } & (
   | {
-      tokensIn: Address[];
-      amounts: BigNumberish[];
+      tokenIn: Address[];
+      amountIn: BigNumberish[];
     }
   | {
       tokenIn: Address;
-      amount: BigNumberish;
+      amountIn: BigNumberish;
     }
 );
 
