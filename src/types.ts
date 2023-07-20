@@ -19,7 +19,17 @@ export type Shortcut = {
   definition: ShortcutDefinition;
 };
 
-export type MetaPosition = {
+export type BasePosition = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  logoURI: string;
+  address: Address;
+  chainId: number;
+  id: string;
+};
+
+export type PoolPosition = {
   apy: number | null;
   apyBase: number | null;
   apyReward: number | null;
@@ -56,6 +66,32 @@ export type MetaPosition = {
     category: string;
     chainIds: number[];
   };
+};
+
+export type Position = BasePosition | PoolPosition;
+
+export type Route = {
+  action: string;
+  protocol: string;
+  tokenIn: string;
+  tokenOut: string;
+  positionInId: string;
+  positionOutId: string;
+};
+
+export type EnsoTransaction = {
+  data: Address;
+  from: Address;
+  to: Address;
+  value: string;
+};
+
+export type ExecutableRoute = {
+  amountOut: string;
+  createdAt: number;
+  gas: number;
+  route: Route[];
+  tx: EnsoTransaction;
 };
 
 export type LoadingState = 'loading' | 'error' | 'success' | 'idle';

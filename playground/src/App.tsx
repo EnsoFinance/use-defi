@@ -1,65 +1,68 @@
 import { useMemo } from 'react';
-import { useExecuteShortcut, useShortcuts } from 'use-defi';
+import { useExecutePosition, usePositions } from 'use-defi';
 
-import { UseExecuteShortcutArgs } from '../../src/hooks/useExecuteShortcut/types';
+import { NATIVE_TOKEN_ALIAS } from '../../src/constants';
+import { UseExecutePositionArgs } from '../../src/hooks/useExecutePosition/types';
 
 import './App.css';
 import Connect from './Connect';
+import LoadingGuard from './LoadingGuard';
 
 function App() {
-  const tokenIn = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-  const tokenOut = '0x028171bCA77440897B824Ca71D1c56caC55b68A3';
+  const tokenIn = NATIVE_TOKEN_ALIAS;
+  const tokenOut = '0x6b175474e89094c44da98b954eedeac495271d0f';
   const protocol = undefined;
-  const amount = '10000000000000000';
+  const amount = '1000000';
 
-  const { data } = useShortcuts({
+  const { data, status: positionStatus } = usePositions({
     chain: 1,
     token: tokenOut,
   });
 
-  const shortcutToExecute = useMemo((): UseExecuteShortcutArgs | undefined => {
+  const executeOptions = useMemo((): UseExecutePositionArgs | undefined => {
     if (!data || !data[0]) return undefined;
 
     return {
-      shortcut: data[0],
+      position: data[0],
       tokenIn: tokenIn,
       amountIn: amount,
     };
   }, [data]);
 
-  const { mutate, executionDetails, status: executeShortcutStatus } = useExecuteShortcut(shortcutToExecute);
+  const {
+    executeRoute,
+    executePreliminary,
+    executionDetails,
+    status: executeShortcutStatus,
+  } = useExecutePosition(executeOptions);
+  console.log(executionDetails);
+  const hasPosition = !!executeOptions;
+  const hasRoute = !!executionDetails;
 
   return (
     <div>
-      <h1>
-        <code>use-defi</code>
-        <br />
-        React Hooks Playground
-      </h1>
-
-      {shortcutToExecute ? (
-        <>
-          <p>
-            Found a Shortcut to run: <code>{shortcutToExecute.shortcut?.token?.symbol ?? ''}</code>
-          </p>
-        </>
-      ) : (
-        <>
-          No shortcut found for
-          <br />
-          <code>
-            {tokenIn} {'->'} {tokenOut}
-          </code>
-        </>
-      )}
-      {executionDetails ? (
-        <>
-          <p>Route found for shortcut. Click to run</p>
-          <button onClick={() => mutate()}>Run Transaction</button>
-        </>
-      ) : (
-        <>Finding route: {executeShortcutStatus}</>
-      )}
+      <h2>
+        <code>use-defi code playground</code>
+      </h2>
+      <LoadingGuard isLoading={positionStatus === 'loading'}>
+        {hasPosition ? (
+          <div className="code-block">{executeOptions.position?.name ?? ''}</div>
+        ) : (
+          <div className="code-block">
+            No shortcut route has been found for {tokenIn} to {tokenOut}
+          </div>
+        )}
+      </LoadingGuard>
+      <LoadingGuard isLoading={executeShortcutStatus === 'loading'}>
+        {hasRoute ? (
+          <div className="code-block">
+            <p>Route found for shortcut. Click to run</p>
+            {executionDetails.approvals.length && <button onClick={executePreliminary}>Run Approvals</button>}
+            <button onClick={executeRoute}>Run Transaction</button>
+            <br />
+          </div>
+        ) : null}
+      </LoadingGuard>
       <br />
       <Connect />
     </div>
