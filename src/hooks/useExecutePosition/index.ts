@@ -33,6 +33,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     return [
       {
         apiKey: context.apiKey,
+        transferMethod: args.options?.transferMethod ?? 'APPROVE_TRANSFERFROM',
         chainId: args.position.chainId,
         executor: defaultedExecutor as Address,
         amountIn: args.amountIn,
@@ -42,33 +43,39 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
       undefined,
     ];
   }, [args, context.apiKey, fallbackExecutorQuery]);
-  if (disabledReason) console.log(disabledReason);
 
   const enabledQuery = typeof queryOptions !== 'undefined';
   const {
     isLoading: routeQueryLoading,
     data: routeQueryResponse,
     error: routeQueryError,
-  } = useQuery('useExecuteShortcut', async () => (enabledQuery ? queryRouteWithApprovals(queryOptions) : undefined), {
+  } = useQuery('useExecuteShortcut', async () => queryRouteWithApprovals(queryOptions!), {
     enabled: enabledQuery,
+    staleTime: 1000 * 60 * 10,
+    notifyOnChangeProps: ['data', 'error'],
+    retry: false,
   });
 
   const preparedTransaction = useMemo(() => {
     if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route) return undefined;
-
+    console.log(routeQueryResponse.route.tx);
     return {
       to: routeQueryResponse.route.tx.to,
       data: routeQueryResponse.route.tx.data,
       value: BigInt(routeQueryResponse.route.tx.value) ?? BigInt(0),
     };
   }, [routeQueryResponse]);
-  const { sendTransaction: executeRoute } = useSendTransaction(preparedTransaction);
 
-  const executeApprovals = useCallback(() => {
+  const executeRoute = useCallback(async () => {
+    if (!preparedTransaction) throw new Error('No route execution transaction available');
+    return sendTransaction(preparedTransaction);
+  }, [preparedTransaction]);
+
+  const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map((approvalData) =>
       sendTransaction({
         ...approvalData.tx,
-        value: BigInt(approvalData.tx.value),
+        value: approvalData.tx.value ? BigInt(approvalData.tx.value) : undefined,
       }),
     );
 
@@ -77,14 +84,58 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     return Promise.all(transactionFuncs);
   }, [routeQueryResponse]);
 
+  const executionDetails = useMemo((): UseExecuteShortcutPayload['executionDetails'] => {
+    if (enabledQuery && routeQueryResponse && routeQueryResponse.route) {
+      return {
+        route: {
+          ...routeQueryResponse.route,
+          execute: executeRoute,
+        },
+        approvals: routeQueryResponse.approvals?.map((approval) => ({
+          token: approval.token,
+          amount: approval.amount,
+          gas: approval.gas,
+          spender: approval.spender,
+          execute: async () =>
+            sendTransaction({
+              ...approval.tx,
+              value: approval.tx.value ? BigInt(approval.tx.value) : undefined,
+            }),
+        })),
+        transfers: routeQueryResponse.transfers?.map((transfer) => ({
+          token: transfer.token,
+          amount: transfer.amount,
+          gas: transfer.gas,
+          spender: transfer.spender,
+          execute: async () =>
+            sendTransaction({
+              ...transfer.tx,
+              value: transfer.tx.value ? BigInt(transfer.tx.value) : undefined,
+            }),
+        })),
+      };
+    }
+  }, [enabledQuery, routeQueryResponse, sendTransaction]);
+
   const loadingState = useLoadingStateFromQuery({
     isLoading: routeQueryLoading,
     data: routeQueryResponse,
     error: routeQueryError,
   });
+
+  console.log(loadingState, routeQueryResponse);
+
   return {
     status: loadingState,
+    hasRoute: !enabledQuery || !routeQueryResponse,
+    hasApprovalsOrTransfers: !!(
+      enabledQuery &&
+      routeQueryResponse?.approvals &&
+      routeQueryResponse?.approvals?.length > 0
+    ),
+    errorMessage: disabledReason,
+    executionDetails: executionDetails,
     executeRoute,
-    executePreliminary: executeApprovals,
+    executeApprovalsOrTransfers,
   };
 };

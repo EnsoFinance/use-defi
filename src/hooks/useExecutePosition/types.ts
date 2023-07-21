@@ -1,24 +1,37 @@
 import { Address } from 'viem';
 
-import { BigNumberish, ExecutableRoute, LoadingState, Position, ProtocolName } from '../../types';
+import { BigNumberish, ExecutableRoute, LoadingState, Position, TransferMethods } from '../../types';
+
+type TransactionFunc = () => Promise<any> | void;
 
 export type UseExecuteShortcutPayload = {
-  executeRoute: () => Promise<any> | void;
-  executePreliminary: () => Promise<any> | void;
-  status: LoadingState;
   executionDetails?: {
-    route: ExecutableRoute;
-    approvals: {
+    route: ExecutableRoute & {
+      execute: TransactionFunc;
+    };
+    approvals?: {
       token: Address;
       amount: BigNumberish;
-      execute: () => Promise<any> | void;
+      execute: TransactionFunc;
+    }[];
+    transfers?: {
+      token: Address;
+      amount: BigNumberish;
+      execute: TransactionFunc;
     }[];
   };
+  executeRoute: TransactionFunc;
+  executeApprovalsOrTransfers: TransactionFunc;
+  errorMessage?: string;
+  hasRoute: boolean;
+  hasApprovalsOrTransfers: boolean;
+  status: LoadingState;
 };
 
 export type UseExecutePositionArgs = {
-  executor?: Address;
   position: Position | undefined;
+  chainId?: number;
+  executor?: Address;
   options?: UseExecutePositionArgsOptions;
 } & (
   | {
@@ -34,10 +47,5 @@ export type UseExecutePositionArgs = {
 export type UseExecutePositionArgsOptions = {
   slippage?: number;
   priceImpact?: number;
-  chainId?: number;
-};
-
-export type Hop = {
-  action: 'deposit' | 'withdraw' | 'swap' | string;
-  protocol: ProtocolName;
+  transferMethod?: TransferMethods;
 };

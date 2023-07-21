@@ -1,6 +1,6 @@
 import queryString from 'query-string';
 import { ENSO_API } from 'src/constants';
-import { BigNumberish, EnsoTransaction } from 'src/types';
+import { Approve, BigNumberish } from 'src/types';
 import { Address } from 'viem';
 
 export type QueryApproveOptions = {
@@ -10,13 +10,7 @@ export type QueryApproveOptions = {
   amount: BigNumberish;
 };
 
-export type QueryApproveResponse = {
-  tx: EnsoTransaction;
-  gas: string;
-  token: Address;
-  amount: string;
-  spender: Address;
-};
+export type QueryApproveResponse = Approve;
 
 export const queryApprove = async (options: QueryApproveOptions): Promise<QueryApproveResponse | undefined> => {
   const queryParams = {

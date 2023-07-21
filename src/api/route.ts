@@ -1,13 +1,14 @@
 import { queryApprove, QueryApproveResponse } from 'src/queries/approve';
 import { queryApprovals } from 'src/queries/approve';
 import { queryRoute } from 'src/queries/route';
-import { BigNumberish, EnsoTransaction, ExecutableRoute, LoadingState } from 'src/types';
+import { Approve, BigNumberish, ExecutableRoute, LoadingState, Transfer, TransferMethods, TxData } from 'src/types';
 import { addressCompare, isNativeToken } from 'src/utils/address';
 import { Address } from 'viem';
 
 export type QueryRouteWithApprovalsOptions = {
   chainId: number;
   executor: Address;
+  transferMethod: TransferMethods;
   amountIn: BigNumberish | BigNumberish[];
   tokenIn: Address | Address[];
   tokenOut: Address;
@@ -17,21 +18,15 @@ export type QueryRouteWithApprovalsOptions = {
 export type QueryRouteWithApprovalsResponse = {
   status: LoadingState;
   errorMessage: string | null;
-  route?: ExecutableRoute;
-  approvals?: QueryApproveResponse[];
-  transfers?: {
-    tx: EnsoTransaction;
-    gas: string;
-    token: Address;
-    amount: string;
-    spender: Address;
-  };
+  route: ExecutableRoute | null;
+  approvals?: Approve[] | null;
+  transfers?: Transfer[] | null;
 };
 
 export const queryRouteWithApprovals = async (
   options: QueryRouteWithApprovalsOptions,
 ): Promise<QueryRouteWithApprovalsResponse> => {
-  const { chainId, executor, amountIn, tokenIn, tokenOut, apiKey } = options;
+  const { chainId, executor, amountIn, tokenIn, tokenOut, apiKey, transferMethod } = options;
 
   if (Array.isArray(amountIn) != Array.isArray(tokenIn))
     throw new Error(
@@ -49,48 +44,57 @@ export const queryRouteWithApprovals = async (
     apiKey,
   });
 
-  if (!route) return { status: 'error', errorMessage: 'No route was found' };
+  if (!route) return { status: 'error', errorMessage: 'No route was found', route: null };
 
-  const approvals = await queryApprovals({ fromAddress: executor, chainId });
+  let approvals: Approve[] | null = null;
+  let transfers: Transfer[] | null = null;
 
-  // Calculate approvals
-  let approvalAmountsNeeded: Record<string, BigNumberish> = {};
+  if (transferMethod === 'APPROVE_TRANSFERFROM') {
+    const allowances = await queryApprovals({ fromAddress: executor, chainId });
 
-  (Array.isArray(tokenIn) ? tokenIn : [tokenIn]).forEach((token, index) => {
-    if (!isNativeToken(token)) {
-      const amount = Array.isArray(amountIn) ? amountIn[index] : amountIn;
+    // Calculate approvals
+    let approvalAmountsNeeded: Record<string, BigNumberish> = {};
 
-      if (!approvals) {
-        // No other approvals found, use maximum amount
-        approvalAmountsNeeded[token] = amount;
-      } else {
-        const approvalRecord = approvals.find(({ token: approvedToken }) => addressCompare(approvedToken, token));
+    (Array.isArray(tokenIn) ? tokenIn : [tokenIn]).forEach((token, index) => {
+      if (!isNativeToken(token)) {
+        const amount = Array.isArray(amountIn) ? amountIn[index] : amountIn;
 
-        if (!approvalRecord) {
-          // No specific record for this token, use maximum amount
+        if (!allowances) {
+          // No other approvals found, use maximum amount
           approvalAmountsNeeded[token] = amount;
         } else {
-          // Has existing approval, check for top-up
-          const remainder = BigInt(approvalRecord.amount) - BigInt(amount);
+          const approvalRecord = allowances.find(({ token: approvedToken }) => addressCompare(approvedToken, token));
 
-          if (remainder < 0) {
-            approvalAmountsNeeded[token] = -remainder;
+          if (!approvalRecord) {
+            // No specific record for this token, use maximum amount
+            approvalAmountsNeeded[token] = amount;
+          } else {
+            // Has existing approval, check for top-up
+            const remainder = BigInt(approvalRecord.amount) - BigInt(amount);
+
+            if (remainder < 0) {
+              approvalAmountsNeeded[token] = -remainder;
+            }
           }
         }
       }
-    }
-  });
+    });
 
-  const approvalTransactions = await Promise.all(
-    Object.entries(approvalAmountsNeeded).map(async ([token, amount]) => {
-      // TODO: Some of these could fail?
-      return await queryApprove({ fromAddress: executor, tokenAddress: token as Address, amount: amount });
-    }),
-  );
+    approvals = (
+      await Promise.all(
+        Object.entries(approvalAmountsNeeded).map(async ([token, amount]) => {
+          // TODO: Some of these could fail?
+          return await queryApprove({ fromAddress: executor, tokenAddress: token as Address, amount: amount });
+        }),
+      )
+    ).filter((a) => a !== undefined) as Approve[];
+  } else {
+    throw new Error(`${transferMethod} not implemented`);
+  }
 
   return {
     route,
-    approvals: approvalTransactions.filter((a) => a !== undefined) as QueryApproveResponse[],
+    approvals,
     status: 'success',
     errorMessage: null,
   };

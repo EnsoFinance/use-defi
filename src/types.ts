@@ -1,24 +1,5 @@
 import { Address } from 'viem';
 
-// Temporary Type definitions
-export type ShortcutDefinition = {
-  liveParams: {
-    type: string;
-  }[];
-  inputs: {}[];
-  steps: {
-    contract: {
-      address: string;
-    };
-  }[];
-};
-
-export type Shortcut = {
-  version: number;
-  creator: string;
-  definition: ShortcutDefinition;
-};
-
 export type BasePosition = {
   name: string;
   symbol: string;
@@ -70,6 +51,29 @@ export type PoolPosition = {
 
 export type Position = BasePosition | PoolPosition;
 
+export type TxData = {
+  data: Address;
+  from: Address;
+  to: Address;
+  value: string;
+};
+
+export type Approve = {
+  tx: TxData;
+  gas: string;
+  token: Address;
+  amount: string;
+  spender: Address;
+};
+
+export type Transfer = {
+  tx: TxData;
+  gas: string;
+  token: Address;
+  amount: string;
+  spender: Address;
+};
+
 export type Route = {
   action: string;
   protocol: string;
@@ -79,22 +83,17 @@ export type Route = {
   positionOutId: string;
 };
 
-export type EnsoTransaction = {
-  data: Address;
-  from: Address;
-  to: Address;
-  value: string;
-};
-
 export type ExecutableRoute = {
   amountOut: string;
   createdAt: number;
   gas: number;
   route: Route[];
-  tx: EnsoTransaction;
+  tx: TxData;
 };
 
 export type LoadingState = 'loading' | 'error' | 'success' | 'idle';
+
+export type TransferMethods = 'APPROVE_TRANSFERFROM' | 'TRANSFER' | 'PERMIT2';
 
 export type BigNumberish = bigint | number | string;
 

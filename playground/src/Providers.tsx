@@ -12,6 +12,7 @@ const config = createConfig({
 });
 
 function Providers({ children }: { children: ReactNode }) {
+  console.log(config);
   return (
     <WagmiConfig config={config}>
       <UseDeFiProvider apiKey={import.meta.env.VITE_ENSO_API_KEY}>{children}</UseDeFiProvider>

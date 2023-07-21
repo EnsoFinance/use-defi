@@ -48,6 +48,8 @@ export const queryRoute = async (options: QueryRouteOptions): Promise<QueryRoute
     },
   });
   const route = (await routeResponse.json()) as ExecutableRoute;
-  if (!route.tx) throw new Error('No valid response');
+  if (!route.tx) {
+    throw new Error((route as any).error && (route as any).message ? (route as any).message : 'No valid response');
+  }
   return route;
 };

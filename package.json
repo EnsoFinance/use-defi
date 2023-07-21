@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "rollup -c",
-    "dev": "cd playground && vite dev",
-    "docs:generate": "tsx scripts/export_docs.ts"
+    "dev": "cd playground && vite dev"
   },
   "keywords": [],
   "author": "",
