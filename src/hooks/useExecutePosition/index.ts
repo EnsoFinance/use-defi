@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from 'src/api/route';
 import { UseDeFiContext } from 'src/provider/UseDeFiProvider';
 import { getTokenAddressFromPosition } from 'src/utils/position';
-import { Address, useAccount, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
 import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 

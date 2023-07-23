@@ -35,7 +35,7 @@ export default function UseDeFiProvider({ children, walletClient, apiKey }: UseD
       walletClient: defaultedWalletClient,
       apiKey,
     };
-  }, [walletClient, fallbackWalletClientQuery]);
+  }, [walletClient, fallbackWalletClientQuery, apiKey]);
 
   return (
     <UseDeFiContext.Provider value={providerState}>
