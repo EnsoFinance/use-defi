@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { UseDeFiProvider } from 'use-defi';
+import { UseDeFiProvider } from '@ensofinance/use-defi';
+import React, { ReactNode } from 'react';
 import { createPublicClient, http } from 'viem';
 import { createConfig, mainnet, WagmiConfig } from 'wagmi';
 

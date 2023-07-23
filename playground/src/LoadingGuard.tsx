@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface LoadingGuardProps {
   isLoading: boolean;
   children: React.ReactNode | null;

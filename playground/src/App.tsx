@@ -1,5 +1,5 @@
+import { useExecutePosition, usePositions } from '@ensofinance/use-defi';
 import { useMemo } from 'react';
-import { useExecutePosition, usePositions } from 'use-defi';
 import { parseUnits } from 'viem';
 
 import { UseExecutePositionArgs } from '../../src/hooks/useExecutePosition/types';

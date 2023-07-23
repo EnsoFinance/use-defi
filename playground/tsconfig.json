@@ -22,7 +22,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "use-defi": [
+      "@ensofinance/use-defi": [
         "../src/index.ts"
       ]
     }
