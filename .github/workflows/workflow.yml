@@ -18,6 +18,14 @@ jobs:
           node-version: 18.x
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Use pnpm 8.x
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --ignore-scripts]
+
       - uses: actions/checkout@master
       - name: Checkout
         uses: actions/checkout@v3
