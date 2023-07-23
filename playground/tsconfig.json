@@ -23,13 +23,13 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "use-defi": [
-        "../hooks/index.ts"
+        "../src/index.ts"
       ]
     }
   },
   "include": [
     "src",
-    "../hooks/*.ts"
+    "../src/*.ts"
   ],
   "references": [
     {

@@ -1,20 +1,25 @@
 {
   "name": "use-defi",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "React hooks library to use with enso shortcuts infrastructure",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "cd playground && vite dev",
-    "docs:generate": "tsx scripts/export_docs.ts"
+    "preinstall": "npx only-allow pnpm",
+    "build": "pnpm build:setup && rollup -c",
+    "build:setup": "pnpm gts clean && mkdir dist && jq 'del(.scripts) | del(.devDependencies) | del(.private) | del(.pnpm)' package.json > dist/package.json",
+    "dev": "cd playground && vite dev"
   },
   "keywords": [],
-  "author": "",
+  "author": "@ensofinance",
   "license": "ISC",
   "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
     "@wagmi/core": "^1.3.7",
     "axios": "^1.4.0",
-    "react": "^18.2.0"
+    "query-string": "^8.1.0",
+    "react": "^18.2.0",
+    "react-query": "^3.39.3",
+    "wagmi": "^1.3.9"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.2",
@@ -31,6 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.1",
     "fast-glob": "^3.3.0",
     "gray-matter": "^4.0.3",
+    "gts": "^3.1.1",
     "prettier": "^3.0.0",
     "react-dom": "^18.2.0",
     "rollup": "^3.26.2",
