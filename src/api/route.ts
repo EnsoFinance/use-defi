@@ -1,7 +1,7 @@
-import { queryApprove, QueryApproveResponse } from 'src/queries/approve';
+import { queryApprove } from 'src/queries/approve';
 import { queryApprovals } from 'src/queries/approve';
 import { queryRoute } from 'src/queries/route';
-import { Approve, BigNumberish, ExecutableRoute, LoadingState, Transfer, TransferMethods, TxData } from 'src/types';
+import { Approve, BigNumberish, ExecutableRoute, LoadingState, Transfer, TransferMethods } from 'src/types';
 import { addressCompare, isNativeToken } from 'src/utils/address';
 import { Address } from 'viem';
 
