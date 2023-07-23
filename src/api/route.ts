@@ -1,9 +1,9 @@
-import { queryApprove } from 'src/queries/approve';
-import { queryApprovals } from 'src/queries/approve';
-import { queryRoute } from 'src/queries/route';
-import { ApproveTransaction, ExecutableRoute, TransferTransaction } from 'src/types/api';
-import { BigNumberish, LoadingState, TransferMethods } from 'src/types/enso';
-import { addressCompare, isNativeToken } from 'src/utils/address';
+import { queryApprove } from 'queries/approve';
+import { queryApprovals } from 'queries/approve';
+import { queryRoute } from 'queries/route';
+import { ApproveTransaction, ExecutableRoute, TransferTransaction } from 'types/api';
+import { BigNumberish, LoadingState, TransferMethods } from 'types/enso';
+import { addressCompare, isNativeToken } from 'utils/address';
 import { Address } from 'viem';
 
 export type QueryRouteWithApprovalsOptions = {

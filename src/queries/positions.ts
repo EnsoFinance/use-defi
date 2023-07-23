@@ -1,5 +1,5 @@
-import { USE_POSITIONS_DATA_SOURCE } from 'src/constants';
-import { Position } from 'src/types/api';
+import { USE_POSITIONS_DATA_SOURCE } from 'constants';
+import { Position } from 'types/api';
 
 export type QueryMetaPositionsArgs = Record<never, never>;
 export type QueryPositionsResponse = Position[];

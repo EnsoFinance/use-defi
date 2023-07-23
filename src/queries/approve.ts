@@ -1,11 +1,6 @@
+import { ENSO_API } from 'constants';
 import queryString from 'query-string';
-import { ENSO_API } from 'src/constants';
-import {
-  QueryAllowancesOptions,
-  QueryAllowancesResponse,
-  QueryApproveOptions,
-  QueryApproveResponse,
-} from 'src/types/api';
+import { QueryAllowancesOptions, QueryAllowancesResponse, QueryApproveOptions, QueryApproveResponse } from 'types/api';
 
 export const queryApprove = async (options: QueryApproveOptions): Promise<QueryApproveResponse | undefined> => {
   const queryParams = {

@@ -1,8 +1,8 @@
+import { ENSO_API } from 'constants';
 import queryString from 'query-string';
-import { ENSO_API } from 'src/constants';
-import { ExecutableRoute } from 'src/types/api';
-import { BigNumberish } from 'src/types/enso';
-import { manyBigIntParseToString } from 'src/utils/bigint';
+import { ExecutableRoute } from 'types/api';
+import { BigNumberish } from 'types/enso';
+import { manyBigIntParseToString } from 'utils/bigint';
 import { Address } from 'viem';
 
 export type QueryRouteOptions = {

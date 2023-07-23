@@ -1,5 +1,5 @@
-import { ExecutableRoute, Position } from 'src/types/api';
-import { BigNumberish, LoadingState, TransferMethods } from 'src/types/enso';
+import { ExecutableRoute, Position } from 'types/api';
+import { BigNumberish, LoadingState, TransferMethods } from 'types/enso';
 import { Address } from 'viem';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

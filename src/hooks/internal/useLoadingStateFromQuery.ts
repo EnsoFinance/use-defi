@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LoadingState } from 'src/types';
+import { LoadingState } from 'types';
 
 export interface UseLoadingStateFromQueryArgs {
   data: any | undefined;

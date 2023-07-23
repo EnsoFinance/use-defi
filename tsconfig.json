@@ -15,11 +15,15 @@
     "declaration": true,
     "resolveJsonModule": true,
     "rootDir": ".",
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "jsx": "preserve",
     "skipLibCheck": true,
     "noUnusedLocals": true,
-    "paths": {},
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ],
+    },
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -32,7 +36,6 @@
   ],
   "exclude": [
     "node_modules",
-    "**/**/*.test.ts",
     "**/dist"
   ]
 }

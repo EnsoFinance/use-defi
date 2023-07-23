@@ -1,4 +1,4 @@
-import { NATIVE_TOKEN_ALIAS } from 'src/constants';
+import { NATIVE_TOKEN_ALIAS } from 'constants';
 
 export const addressCompare = (a: string, b: string) => {
   return !!(a && b && a?.toLowerCase() === b?.toLowerCase());

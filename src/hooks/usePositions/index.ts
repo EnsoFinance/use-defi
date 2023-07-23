@@ -1,8 +1,8 @@
+import { queryPositions } from 'queries/positions';
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
-import { queryPositions } from 'src/queries/positions';
-import { PoolPosition, Position } from 'src/types/api';
-import { getTokenAddressFromPosition } from 'src/utils/position';
+import { PoolPosition, Position } from 'types/api';
+import { getTokenAddressFromPosition } from 'utils/position';
 
 import { addressCompare } from '../../utils/address';
 import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
