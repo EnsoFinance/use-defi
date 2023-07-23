@@ -1,10 +1,6 @@
-name: Upload Docs to S3
-
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -36,3 +32,6 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Publish
+        run: npm publish
