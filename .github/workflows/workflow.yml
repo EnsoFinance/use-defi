@@ -1,4 +1,4 @@
-name: Upload Docs to S3
+name: Lint/Test Check
 
 on:
   pull_request:
