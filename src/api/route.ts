@@ -48,13 +48,13 @@ export const queryRouteWithApprovals = async (
   if (!route) return { status: 'error', errorMessage: 'No route was found', route: null };
 
   let approvals: ApproveTransaction[] | null = null;
-  let transfers: TransferTransaction[] | null = null;
+  // let transfers: TransferTransaction[] | null = null;
 
   if (transferMethod === 'APPROVE_TRANSFERFROM') {
     const allowances = await queryApprovals({ fromAddress: executor, chainId });
 
     // Calculate approvals
-    let approvalAmountsNeeded: Record<string, BigNumberish> = {};
+    const approvalAmountsNeeded: Record<string, BigNumberish> = {};
 
     (Array.isArray(tokenIn) ? tokenIn : [tokenIn]).forEach((token, index) => {
       if (!isNativeToken(token)) {

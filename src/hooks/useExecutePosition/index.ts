@@ -35,7 +35,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
         apiKey: context.apiKey,
         transferMethod: args.options?.transferMethod ?? 'APPROVE_TRANSFERFROM',
         chainId: args.position.chainId,
-        executor: defaultedExecutor as Address,
+        executor: defaultedExecutor,
         amountIn: args.amountIn,
         tokenIn: args.tokenIn,
         tokenOut: positionToken as `0x${string}`,
@@ -68,7 +68,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
   const executeRoute = useCallback(async () => {
     if (!preparedTransaction) throw new Error('No route execution transaction available');
     return walletClient?.sendTransaction(preparedTransaction);
-  }, [preparedTransaction]);
+  }, [preparedTransaction, walletClient]);
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
@@ -82,7 +82,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     if (!transactionFuncs) return;
 
     return Promise.all(transactionFuncs);
-  }, [routeQueryResponse]);
+  }, [routeQueryResponse, walletClient]);
 
   const executionDetails = useMemo((): UseExecuteShortcutPayload['executionDetails'] => {
     if (enabledQuery && routeQueryResponse && routeQueryResponse.route) {
@@ -115,7 +115,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
         })),
       };
     }
-  }, [enabledQuery, routeQueryResponse, walletClient]);
+  }, [enabledQuery, routeQueryResponse, walletClient, executeRoute]);
 
   const loadingState = useLoadingStateFromQuery({
     isLoading: routeQueryLoading,

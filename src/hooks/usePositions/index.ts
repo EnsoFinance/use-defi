@@ -17,7 +17,7 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
   const loadingState = useLoadingStateFromQuery({ data, error, isLoading });
 
   const filteredData = useMemo(() => {
-    let filters: FilterType[] = [];
+    const filters: FilterType[] = [];
     if (args.chain) {
       filters.push((row: Position) => row.chainId === args.chain);
     }

@@ -15,6 +15,9 @@ export type QueryRouteOptions = {
 };
 export type QueryRouteResponse = ExecutableRoute;
 
+type APIError = { error: string; message: string; statusCode: number };
+type APIResponse = ExecutableRoute | APIError;
+
 export const queryRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId,
@@ -48,9 +51,10 @@ export const queryRoute = async (options: QueryRouteOptions): Promise<QueryRoute
       'Content-Type': 'application/json',
     },
   });
-  const route = (await routeResponse.json()) as ExecutableRoute;
-  if (!route.tx) {
-    throw new Error((route as any).error && (route as any).message ? (route as any).message : 'No valid response');
+  const route = (await routeResponse.json()) as APIResponse;
+  if (!(route as ExecutableRoute).tx) {
+    const err = route as APIError;
+    throw new Error(err.error && err.message ? err.message : 'No valid response');
   }
-  return route;
+  return route as ExecutableRoute;
 };

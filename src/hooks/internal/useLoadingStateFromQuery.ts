@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { LoadingState } from 'src/types';
 
 export interface UseLoadingStateFromQueryArgs {
-  data: unknown | undefined;
-  error: unknown | undefined;
+  data: any | undefined;
+  error: any | undefined;
   isLoading: boolean;
 }
 
