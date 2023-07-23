@@ -1,4 +1,4 @@
-import { BasePosition, PoolPosition, Position } from 'src/types';
+import { BasePosition, PoolPosition, Position } from 'src/types/api';
 
 export const getTokenAddressFromPosition = (position: Position) => {
   if ((position as BasePosition).address) return (position as BasePosition).address;

@@ -1,16 +1,11 @@
 import queryString from 'query-string';
 import { ENSO_API } from 'src/constants';
-import { Approve, BigNumberish } from 'src/types';
-import { Address } from 'viem';
-
-export type QueryApproveOptions = {
-  chainId?: number;
-  fromAddress: Address;
-  tokenAddress: Address;
-  amount: BigNumberish;
-};
-
-export type QueryApproveResponse = Approve;
+import {
+  QueryAllowancesOptions,
+  QueryAllowancesResponse,
+  QueryApproveOptions,
+  QueryApproveResponse,
+} from 'src/types/api';
 
 export const queryApprove = async (options: QueryApproveOptions): Promise<QueryApproveResponse | undefined> => {
   const queryParams = {
@@ -28,18 +23,7 @@ export const queryApprove = async (options: QueryApproveOptions): Promise<QueryA
   return json;
 };
 
-export type QueryApprovalsOptions = {
-  chainId?: number;
-  fromAddress: Address;
-};
-
-export type QueryApprovalsResponse = {
-  token: Address;
-  spender: Address;
-  amount: string;
-}[];
-
-export const queryApprovals = async (options: QueryApprovalsOptions): Promise<QueryApprovalsResponse | undefined> => {
+export const queryApprovals = async (options: QueryAllowancesOptions): Promise<QueryAllowancesResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId ?? 1,
     fromAddress: options.fromAddress,
@@ -50,5 +34,5 @@ export const queryApprovals = async (options: QueryApprovalsOptions): Promise<Qu
   const json = await response.json();
 
   if (!Array.isArray(json)) throw new Error('No valid response');
-  return json as QueryApprovalsResponse;
+  return json as QueryAllowancesResponse;
 };

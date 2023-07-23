@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { queryPositions } from 'src/queries/positions';
-import { PoolPosition, Position } from 'src/types';
+import { PoolPosition, Position } from 'src/types/api';
 import { getTokenAddressFromPosition } from 'src/utils/position';
 
 import { addressCompare } from '../../utils/address';
@@ -33,7 +33,7 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
       filters.push((row: Position) => {
         const positionToken = getTokenAddressFromPosition(row);
 
-        return positionToken && addressCompare(positionToken, args.token as string);
+        return !!positionToken && addressCompare(positionToken, args.token as string);
       });
     }
 

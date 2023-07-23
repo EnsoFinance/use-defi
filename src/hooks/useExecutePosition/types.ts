@@ -1,6 +1,6 @@
+import { ExecutableRoute, Position } from 'src/types/api';
+import { BigNumberish, LoadingState, TransferMethods } from 'src/types/enso';
 import { Address } from 'viem';
-
-import { BigNumberish, ExecutableRoute, LoadingState, Position, TransferMethods } from '../../types';
 
 type TransactionFunc = () => Promise<any> | void;
 

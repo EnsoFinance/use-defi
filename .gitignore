@@ -80,3 +80,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/generated/*

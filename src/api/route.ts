@@ -1,7 +1,8 @@
 import { queryApprove } from 'src/queries/approve';
 import { queryApprovals } from 'src/queries/approve';
 import { queryRoute } from 'src/queries/route';
-import { Approve, BigNumberish, ExecutableRoute, LoadingState, Transfer, TransferMethods } from 'src/types';
+import { ApproveTransaction, ExecutableRoute, TransferTransaction } from 'src/types/api';
+import { BigNumberish, LoadingState, TransferMethods } from 'src/types/enso';
 import { addressCompare, isNativeToken } from 'src/utils/address';
 import { Address } from 'viem';
 
@@ -19,8 +20,8 @@ export type QueryRouteWithApprovalsResponse = {
   status: LoadingState;
   errorMessage: string | null;
   route: ExecutableRoute | null;
-  approvals?: Approve[] | null;
-  transfers?: Transfer[] | null;
+  approvals?: ApproveTransaction[] | null;
+  transfers?: TransferTransaction[] | null;
 };
 
 export const queryRouteWithApprovals = async (
@@ -46,8 +47,8 @@ export const queryRouteWithApprovals = async (
 
   if (!route) return { status: 'error', errorMessage: 'No route was found', route: null };
 
-  let approvals: Approve[] | null = null;
-  let transfers: Transfer[] | null = null;
+  let approvals: ApproveTransaction[] | null = null;
+  let transfers: TransferTransaction[] | null = null;
 
   if (transferMethod === 'APPROVE_TRANSFERFROM') {
     const allowances = await queryApprovals({ fromAddress: executor, chainId });
@@ -84,10 +85,14 @@ export const queryRouteWithApprovals = async (
       await Promise.all(
         Object.entries(approvalAmountsNeeded).map(async ([token, amount]) => {
           // TODO: Some of these could fail?
-          return await queryApprove({ fromAddress: executor, tokenAddress: token as Address, amount: amount });
+          return await queryApprove({
+            fromAddress: executor,
+            tokenAddress: token as Address,
+            amount: amount.toString(),
+          });
         }),
       )
-    ).filter((a) => a !== undefined) as Approve[];
+    ).filter((a) => a !== undefined) as ApproveTransaction[];
   } else {
     throw new Error(`${transferMethod} not implemented`);
   }

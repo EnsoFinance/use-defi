@@ -38,7 +38,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
         executor: defaultedExecutor as Address,
         amountIn: args.amountIn,
         tokenIn: args.tokenIn,
-        tokenOut: positionToken,
+        tokenOut: positionToken as `0x${string}`,
       },
       undefined,
     ];
@@ -59,8 +59,8 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
   const preparedTransaction = useMemo(() => {
     if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route) return undefined;
     return {
-      to: routeQueryResponse.route.tx.to,
-      data: routeQueryResponse.route.tx.data,
+      to: routeQueryResponse.route.tx.to as `0x${string}`,
+      data: routeQueryResponse.route.tx.data as `0x${string}`,
       value: BigInt(routeQueryResponse.route.tx.value) ?? BigInt(0),
     };
   }, [routeQueryResponse]);
@@ -92,7 +92,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           execute: executeRoute,
         },
         approvals: routeQueryResponse.approvals?.map((approval) => ({
-          token: approval.token,
+          token: approval.token as `0x${string}`,
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
@@ -103,7 +103,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
             }),
         })),
         transfers: routeQueryResponse.transfers?.map((transfer) => ({
-          token: transfer.token,
+          token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,
           spender: transfer.spender,

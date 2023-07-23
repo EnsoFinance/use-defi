@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 import { ENSO_API } from 'src/constants';
-import { BigNumberish, ExecutableRoute } from 'src/types';
+import { ExecutableRoute } from 'src/types/api';
+import { BigNumberish } from 'src/types/enso';
 import { manyBigIntParseToString } from 'src/utils/bigint';
 import { Address } from 'viem';
 
