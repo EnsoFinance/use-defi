@@ -50,6 +50,7 @@
     "react-dom": "^18.2.0",
     "rollup": "^3.26.2",
     "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-includepaths": "^0.2.4",
     "tslib": "^2.6.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",

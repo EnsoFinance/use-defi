@@ -14,7 +14,7 @@
     "strictFunctionTypes": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "baseUrl": "./src",
     "jsx": "preserve",
     "skipLibCheck": true,

@@ -96,6 +96,9 @@ devDependencies:
   rollup-plugin-dts:
     specifier: ^5.3.0
     version: 5.3.0(rollup@3.26.2)(typescript@5.1.6)
+  rollup-plugin-includepaths:
+    specifier: ^0.2.4
+    version: 0.2.4
   tslib:
     specifier: ^2.6.0
     version: 2.6.0
@@ -5448,6 +5451,10 @@ packages:
       typescript: 5.1.6
     optionalDependencies:
       '@babel/code-frame': 7.22.5
+    dev: true
+
+  /rollup-plugin-includepaths@0.2.4:
+    resolution: {integrity: sha512-iZen+XKVExeCzk7jeSZPJKL7B67slZNr8GXSC5ROBXtDGXDBH8wdjMfdNW5hf9kPt+tHyIvWh3wlE9bPrZL24g==}
     dev: true
 
   /rollup@3.26.2:
