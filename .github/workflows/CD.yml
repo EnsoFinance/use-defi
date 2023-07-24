@@ -9,7 +9,7 @@ env:
 
 jobs:
   ci:
-    uses: ./.github/workflows/CI.yaml
+    uses: ./.github/workflows/CI.yml
     secrets: inherit
 
   publish:
