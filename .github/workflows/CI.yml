@@ -38,6 +38,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Build
+        run: pnpm build
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
