@@ -20,7 +20,6 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
-      includePaths({ paths: './src' }),
       esbuild({
         jsx: 'transform', // default, or 'preserve'
         jsxFactory: 'React.createElement',
@@ -36,6 +35,6 @@ export default [
         file: 'dist/index.d.ts',
       },
     ],
-    plugins: [resolve(), commonjs(), includePaths({ paths: './src' }), dts()],
+    plugins: [resolve(), commonjs(), dts()],
   },
 ];
