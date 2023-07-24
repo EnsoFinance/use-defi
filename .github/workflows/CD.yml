@@ -1,4 +1,4 @@
-name: NPM Release
+name: Continuous Deployment
 
 on:
   release:
@@ -8,6 +8,10 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
+  ci:
+    uses: ./.github/workflows/CI.yaml
+    secrets: inherit
+
   publish:
     runs-on: ubuntu-latest
     steps:
