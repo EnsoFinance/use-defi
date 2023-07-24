@@ -1,10 +1,10 @@
 import queryString from 'query-string';
-import { ExecutableRoute } from 'types/api';
-import { BigNumberish } from 'types/enso';
-import { manyBigIntParseToString } from 'utils/bigint';
 import { Address } from 'viem';
 
 import { ENSO_API } from '../constants';
+import { ExecutableRoute } from '../types/api';
+import { BigNumberish } from '../types/enso';
+import { manyBigIntParseToString } from '../utils/bigint';
 
 export type QueryRouteOptions = {
   chainId: number;

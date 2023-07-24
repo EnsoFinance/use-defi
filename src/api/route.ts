@@ -1,10 +1,11 @@
-import { queryApprove } from 'queries/approve';
-import { queryApprovals } from 'queries/approve';
-import { queryRoute } from 'queries/route';
-import { ApproveTransaction, ExecutableRoute, TransferTransaction } from 'types/api';
-import { BigNumberish, LoadingState, TransferMethods } from 'types/enso';
-import { addressCompare, isNativeToken } from 'utils/address';
 import { Address } from 'viem';
+
+import { queryApprove } from '../queries/approve';
+import { queryApprovals } from '../queries/approve';
+import { queryRoute } from '../queries/route';
+import { ApproveTransaction, ExecutableRoute, TransferTransaction } from '../types/api';
+import { BigNumberish, LoadingState, TransferMethods } from '../types/enso';
+import { addressCompare, isNativeToken } from '../utils/address';
 
 export type QueryRouteWithApprovalsOptions = {
   chainId: number;

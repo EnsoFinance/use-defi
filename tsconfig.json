@@ -20,11 +20,6 @@
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "emitDeclarationOnly": true,
-    "paths": {
-      "src/*": [
-        "./src/*"
-      ],
-    },
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,

@@ -1,10 +1,10 @@
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from 'api/route';
-import { UseDeFiContext } from 'provider/UseDeFiProvider';
 import { useCallback, useContext, useMemo } from 'react';
 import { useQuery } from 'react-query';
-import { getTokenAddressFromPosition } from 'utils/position';
 import { useAccount, useWalletClient } from 'wagmi';
 
+import { UseDeFiContext } from '../../provider/UseDeFiProvider';
+import { getTokenAddressFromPosition } from '../../utils/position';
 import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 
 import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
