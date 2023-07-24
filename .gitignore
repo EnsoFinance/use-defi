@@ -81,4 +81,4 @@ dist-ssr
 *.sln
 *.sw?
 
-src/generated/*
+src/generated/*.ts
