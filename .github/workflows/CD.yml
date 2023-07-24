@@ -1,8 +1,9 @@
 name: Continuous Deployment
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -12,7 +13,8 @@ jobs:
     uses: ./.github/workflows/CI.yml
     secrets: inherit
 
-  publish:
+  cd:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
