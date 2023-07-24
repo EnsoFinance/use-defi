@@ -1,3 +1,4 @@
+import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
@@ -16,6 +17,6 @@ export default {
       format: 'esm',
     },
   ],
-  plugins: [resolve(), esbuild(), dts(), includePaths({ paths: './src' })],
+  plugins: [resolve(), esbuild(), commonjs(), dts(), includePaths({ paths: './src' })],
   external: ['react'],
 };
