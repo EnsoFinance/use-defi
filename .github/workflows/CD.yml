@@ -27,7 +27,7 @@ jobs:
           version: 8.x
           run_install: |
             - recursive: true
-              args: [--frozen-lockfile, --ignore-scripts]
+              args: [--frozen-lockfile]
 
       - name: Lint
         run: pnpm lint
