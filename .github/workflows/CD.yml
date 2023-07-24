@@ -17,16 +17,6 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'
-
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
