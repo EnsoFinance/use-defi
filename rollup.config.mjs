@@ -2,7 +2,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
-import includePaths from 'rollup-plugin-includepaths';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 export default [
   {
@@ -18,6 +18,7 @@ export default [
       },
     ],
     plugins: [
+      peerDepsExternal(),
       resolve(),
       commonjs(),
       esbuild({
@@ -35,6 +36,6 @@ export default [
         file: 'dist/index.d.ts',
       },
     ],
-    plugins: [resolve(), commonjs(), dts()],
+    plugins: [peerDepsExternal(), resolve(), commonjs(), dts()],
   },
 ];
