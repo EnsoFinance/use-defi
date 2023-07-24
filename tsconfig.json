@@ -19,6 +19,7 @@
     "jsx": "preserve",
     "skipLibCheck": true,
     "noUnusedLocals": true,
+    "emitDeclarationOnly": true,
     "paths": {
       "src/*": [
         "./src/*"
@@ -26,7 +27,6 @@
     },
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "isolatedModules": true,
     "outDir": "dist"
   },
