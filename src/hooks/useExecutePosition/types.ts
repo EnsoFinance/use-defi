@@ -1,6 +1,7 @@
-import { ExecutableRoute, Position } from 'types/api';
-import { BigNumberish, LoadingState, TransferMethods } from 'types/enso';
 import { Address } from 'viem';
+
+import { ExecutableRoute, Position } from '../../types/api';
+import { BigNumberish, LoadingState, TransferMethods } from '../../types/enso';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TransactionFunc = () => Promise<any> | void;

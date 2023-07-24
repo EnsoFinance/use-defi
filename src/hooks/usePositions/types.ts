@@ -1,6 +1,7 @@
-import { Position, ProtocolName } from 'types/api';
-import { LoadingState } from 'types/enso';
 import { Address } from 'viem';
+
+import { Position, ProtocolName } from '../../types/api';
+import { LoadingState } from '../../types/enso';
 
 export type UsePositionsPayload = {
   data?: Position[];

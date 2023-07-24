@@ -1,6 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
-import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
+import esbuild from 'rollup-plugin-esbuild';
 import includePaths from 'rollup-plugin-includepaths';
 
 export default {
@@ -9,12 +9,13 @@ export default {
     {
       file: `dist/index.js`,
       format: 'cjs',
+      exports: 'default',
     },
     {
       file: `dist/index.esm.js`,
       format: 'esm',
     },
   ],
-  plugins: [resolve(), typescript(), dts(), includePaths({ paths: './src' })],
+  plugins: [resolve(), esbuild(), dts(), includePaths({ paths: './src' })],
   external: ['react'],
 };
