@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
@@ -18,6 +19,10 @@ export default [
       },
     ],
     plugins: [
+      replace({
+        'process.env.ENSO_API': JSON.stringify(process.env.ENSO_API ?? ''),
+        preventAssignment: true,
+      }),
       peerDepsExternal(),
       resolve(),
       commonjs(),
@@ -36,6 +41,15 @@ export default [
         file: 'dist/index.d.ts',
       },
     ],
-    plugins: [peerDepsExternal(), resolve(), commonjs(), dts()],
+    plugins: [
+      replace({
+        'process.env.ENSO_API': JSON.stringify(process.env.ENSO_API ?? ''),
+        preventAssignment: true,
+      }),
+      peerDepsExternal(),
+      resolve(),
+      commonjs(),
+      dts(),
+    ],
   },
 ];
