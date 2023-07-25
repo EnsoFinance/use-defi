@@ -1,13 +1,13 @@
 {
   "name": "@ensofinance/use-defi",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "React hooks library to use with enso shortcuts infrastructure",
   "main": "index.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "pnpm generate",
     "lint": "pnpm eslint src/*",
-    "test": "pnpm vitest run --config ./test/vitest.config.ts",
+    "test": "pnpm vitest run --root ./test --config ./vitest.config.ts",
     "generate": "npx openapi-typescript https://api.enso.finance/api-json -o src/generated/api.d.ts",
     "build": "pnpm generate && pnpm build:setup && rollup -c",
     "build:setup": "pnpm gts clean && mkdir dist && jq 'del(.scripts) | del(.devDependencies) | del(.private) | del(.pnpm)' package.json > dist/package.json",
@@ -19,22 +19,21 @@
   "peerDependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@wagmi/core": "^1.3.7",
-    "viem": "^1.2.15",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
+    "viem": "^1.2.15",
     "wagmi": "^1.3.9"
   },
   "dependencies": {
     "query-string": "^8.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.4.4",
-    "vitest": "^0.33.0",
     "@rollup/plugin-commonjs": "^25.0.2",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@testing-library/react": "^14.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/node": "^20.4.4",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
@@ -57,7 +56,8 @@
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",
     "vite": "^4.4.0",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^0.33.0"
   },
   "engines": {
     "node": ">=18.0.0"

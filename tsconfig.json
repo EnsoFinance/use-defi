@@ -14,8 +14,8 @@
     "strictFunctionTypes": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "rootDir": "./src",
-    "baseUrl": "./src",
+    "rootDir": "./",
+    "baseUrl": "./",
     "jsx": "preserve",
     "skipLibCheck": true,
     "noUnusedLocals": true,
@@ -23,7 +23,15 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": [
+      "vitest/globals"
+    ],
+    "paths": {
+      "@ensofinance/use-defi": [
+        "./src"
+      ]
+    }
   },
   "include": [
     "src",
@@ -31,6 +39,6 @@
   ],
   "exclude": [
     "node_modules",
-    "**/dist"
+    "**/dist",
   ]
 }

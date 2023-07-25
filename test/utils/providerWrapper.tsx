@@ -1,4 +1,4 @@
-import { UseDeFiProvider } from 'index';
+import { UseDeFiProvider } from '@ensofinance/use-defi';
 import { ReactNode } from 'react';
 import { createPublicClient, http } from 'viem';
 import { createConfig, mainnet, WagmiConfig } from 'wagmi';

@@ -1,5 +1,5 @@
+import { usePositions } from '@ensofinance/use-defi';
 import { renderHook } from '@testing-library/react';
-import { usePositions } from 'src/hooks';
 import { describe, expect, it } from 'vitest';
 
 import { providerWrapper } from './utils/providerWrapper';
@@ -13,6 +13,6 @@ describe('usePositions', () => {
       },
     );
 
-    expect((result as any).status === 'loading');
+    expect(result.current.status === 'loading');
   });
 });
