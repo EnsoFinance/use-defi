@@ -5,7 +5,6 @@ import { getEnsoApiPositions } from '../../api/positions';
 import { PoolPosition, Position } from '../../types/api';
 import { addressCompare } from '../../utils/address';
 import { getTokenAddressFromPosition } from '../../utils/position';
-import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 
 import { UsePositionsArgs, UsePositionsPayload } from './types';
 
@@ -18,9 +17,7 @@ type FilterType = (row: Position) => boolean;
  */
 
 export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
-  const { isLoading, error, data } = useQuery('usePositions', getEnsoApiPositions);
-
-  const loadingState = useLoadingStateFromQuery({ data, error, isLoading });
+  const { status, error, data } = useQuery('usePositions', getEnsoApiPositions);
 
   const filteredData = useMemo(() => {
     const filters: FilterType[] = [];
@@ -51,7 +48,8 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
   }, [args.chain, args.protocol, args.token, data]);
 
   return {
-    status: loadingState,
+    status,
+    error: (error as string).toString(),
     data: filteredData,
   };
 };

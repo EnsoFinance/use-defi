@@ -5,6 +5,7 @@ import { LoadingState } from '../../types/enso';
 
 export type UsePositionsPayload = {
   data?: Position[];
+  error?: string;
   status: LoadingState;
 };
 

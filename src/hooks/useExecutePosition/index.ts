@@ -7,7 +7,6 @@ import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
 import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
 import { useExecutor } from '../internal/useExecutor';
-import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 
 import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
 
@@ -49,8 +48,8 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const enabledQuery = typeof queryOptions !== 'undefined';
   const {
-    isLoading: routeQueryLoading,
     data: routeQueryResponse,
+    status,
     error: routeQueryError,
   } = useQuery('useExecuteShortcut', async () => queryRouteWithApprovals(queryOptions!), {
     enabled: enabledQuery,
@@ -104,21 +103,15 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     }
   }, [enabledQuery, routeQueryResponse, walletClient, executeRoute]);
 
-  const loadingState = useLoadingStateFromQuery({
-    isLoading: routeQueryLoading,
-    data: routeQueryResponse,
-    error: routeQueryError,
-  });
-  console.log(routeQueryError);
   return {
-    status: loadingState,
+    status,
     hasRoute: !enabledQuery || !routeQueryResponse,
     hasApprovalsOrTransfers: !!(
       enabledQuery &&
       routeQueryResponse?.approvals &&
       routeQueryResponse?.approvals?.length > 0
     ),
-    errorMessage: routeQueryError ? (routeQueryError as any).toString() : disabledReason,
+    errorMessage: routeQueryError ? (routeQueryError as string).toString() : disabledReason,
     executionDetails: executionDetails,
     executeRoute,
     executeApprovalsOrTransfers,

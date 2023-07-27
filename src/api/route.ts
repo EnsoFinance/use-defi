@@ -32,10 +32,12 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
     action: 'route',
     args: {
       fromAddress: options.fromAddress,
-      amountIn: manyBigIntParseToString(Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn]),
-      tokenIn: Array.isArray(options.tokenIn) ? options.tokenIn : [options.tokenIn],
+      amountIn: manyBigIntParseToString(Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn]).join(
+        ',',
+      ),
+      tokenIn: (Array.isArray(options.tokenIn) ? options.tokenIn : [options.tokenIn]).join(','),
       tokenOut: options.tokenOut,
-    } as API_RouteOptions,
+    } as any,
   };
 
   if (options.approve) {
@@ -45,7 +47,7 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
 
       tokenInAmountToApprove: manyBigIntParseToString(
         Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
-      ),
+      ).join(','),
     };
   }
 
