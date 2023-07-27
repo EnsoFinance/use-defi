@@ -49,7 +49,7 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
 
   return {
     status,
-    error: (error as string).toString(),
+    error: error ? (error as string).toString() : undefined,
     data: filteredData,
   };
 };
