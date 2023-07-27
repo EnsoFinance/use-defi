@@ -85,7 +85,19 @@ export type ExecutableRoute = {
 export type API_ApproveResponse = Omit<components['schemas']['WalletApproveTransaction'], 'tx'> & { tx: Transaction };
 export type API_ApproveOptions = operations['WalletController_createApproveTransaction']['parameters']['query'];
 
-export type API_RouteOptions = operations['RouterController_routeShortcutTransaction']['parameters']['query'];
+// FIXME: These are marked as `string[]` in the typings, but the bundle endpoint can't handle single value arrays and will fail.
+type API_RouteOptions_Overwrites = {
+  tokenIn: string;
+  amountIn: string;
+  tokenInAmountToTransfer?: string;
+  tokenInAmountToApprove?: string;
+};
+
+export type API_RouteOptions = Omit<
+  operations['RouterController_routeShortcutTransaction']['parameters']['query'],
+  keyof API_RouteOptions_Overwrites
+> &
+  API_RouteOptions_Overwrites;
 
 // FIXME: Missing in API
 export type API_AllowancesOptions = {

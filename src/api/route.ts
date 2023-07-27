@@ -37,7 +37,7 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
       ),
       tokenIn: (Array.isArray(options.tokenIn) ? options.tokenIn : [options.tokenIn]).join(','),
       tokenOut: options.tokenOut,
-    } as any,
+    } as API_RouteOptions,
   };
 
   if (options.approve) {
@@ -58,7 +58,7 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
 
       tokenInAmountToTransfer: manyBigIntParseToString(
         Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
-      ),
+      ).join(','),
     };
   }
 

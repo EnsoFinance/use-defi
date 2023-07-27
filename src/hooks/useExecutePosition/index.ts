@@ -1,10 +1,10 @@
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 
-import { UseDeFiContext } from '../../provider/UseDeFiProvider';
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
 import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
+import { useDefiContext } from '../internal/useDeFiContext';
 import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
 import { useExecutor } from '../internal/useExecutor';
 
@@ -16,7 +16,7 @@ import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
 export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteShortcutPayload => {
   const { data: executor } = useExecutor();
   const walletClient = useDeFiWalletClient();
-  const context = useContext(UseDeFiContext);
+  const context = useDefiContext();
 
   const [queryOptions, disabledReason] = useMemo((): [
     QueryRouteWithApprovalsOptions | undefined,
