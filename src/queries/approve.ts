@@ -1,14 +1,9 @@
 import queryString from 'query-string';
 
 import { ENSO_API } from '../constants';
-import {
-  QueryAllowancesOptions,
-  QueryAllowancesResponse,
-  QueryApproveOptions,
-  QueryApproveResponse,
-} from '../types/api';
+import { API_AllowancesOptions, API_AllowancesResponse, API_ApproveOptions, API_ApproveResponse } from '../types/api';
 
-export const queryApprove = async (options: QueryApproveOptions): Promise<QueryApproveResponse | undefined> => {
+export const queryApprove = async (options: API_ApproveOptions): Promise<API_ApproveResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId ?? 1,
     fromAddress: options.fromAddress,
@@ -18,13 +13,13 @@ export const queryApprove = async (options: QueryApproveOptions): Promise<QueryA
 
   const response = await fetch(`${ENSO_API}/api/v1/wallet/approve?${queryString.stringify(queryParams)}`);
 
-  const json = (await response.json()) as QueryApproveResponse;
+  const json = (await response.json()) as API_ApproveResponse;
 
   if (!json.tx) throw new Error('No valid response');
   return json;
 };
 
-export const queryApprovals = async (options: QueryAllowancesOptions): Promise<QueryAllowancesResponse | undefined> => {
+export const queryApprovals = async (options: API_AllowancesOptions): Promise<API_AllowancesResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId ?? 1,
     fromAddress: options.fromAddress,
@@ -32,8 +27,8 @@ export const queryApprovals = async (options: QueryAllowancesOptions): Promise<Q
 
   const response = await fetch(`${ENSO_API}/api/v1/wallet/approvals?${queryString.stringify(queryParams)}`);
 
-  const json = await response.json();
+  const json = (await response.json()) as API_AllowancesResponse;
 
   if (!Array.isArray(json)) throw new Error('No valid response');
-  return json as QueryAllowancesResponse;
+  return json;
 };

@@ -2,7 +2,7 @@ import queryString from 'query-string';
 import { Address } from 'viem';
 
 import { ENSO_API } from '../constants';
-import { ExecutableRoute } from '../types/api';
+import { API_RouteOptions, ExecutableRoute } from '../types/api';
 import { BigNumberish } from '../types/enso';
 import { manyBigIntParseToString } from '../utils/bigint';
 
@@ -12,6 +12,8 @@ export type QueryRouteOptions = {
   amountIn: BigNumberish | BigNumberish[];
   tokenIn: Address | Address[];
   tokenOut: Address;
+  approve?: boolean;
+  transfer?: boolean;
   apiKey: string;
 };
 export type QueryRouteResponse = ExecutableRoute;
@@ -29,20 +31,32 @@ export const queryRoute = async (options: QueryRouteOptions): Promise<QueryRoute
     protocol: 'enso',
     action: 'route',
     args: {
-      amountIn: Array.isArray(options.amountIn)
-        ? manyBigIntParseToString(options.amountIn).join(',')
-        : BigInt(options.amountIn).toString(10),
-      tokenIn: Array.isArray(options.tokenIn) ? options.tokenIn.join(',') : options.tokenIn,
+      fromAddress: options.fromAddress,
+      amountIn: manyBigIntParseToString(Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn]),
+      tokenIn: Array.isArray(options.tokenIn) ? options.tokenIn : [options.tokenIn],
       tokenOut: options.tokenOut,
-
-      tokenInAmountToApprove: Array.isArray(options.amountIn)
-        ? manyBigIntParseToString(options.amountIn).join(',')
-        : BigInt(options.amountIn).toString(10),
-      tokenInAmountToTransfer: Array.isArray(options.amountIn)
-        ? manyBigIntParseToString(options.amountIn).join(',')
-        : BigInt(options.amountIn).toString(10),
-    },
+    } as API_RouteOptions,
   };
+
+  if (options.approve) {
+    routeAction.args = {
+      ...routeAction.args,
+
+      tokenInAmountToApprove: manyBigIntParseToString(
+        Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
+      ),
+    };
+  }
+
+  if (options.transfer) {
+    routeAction.args = {
+      ...routeAction.args,
+
+      tokenInAmountToTransfer: manyBigIntParseToString(
+        Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
+      ),
+    };
+  }
 
   const routeResponse = await fetch(`${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`, {
     body: JSON.stringify([routeAction]),

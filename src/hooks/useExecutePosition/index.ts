@@ -1,18 +1,19 @@
 import { useCallback, useContext, useMemo } from 'react';
 import { useQuery } from 'react-query';
-import { useAccount, useWalletClient } from 'wagmi';
 
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../api/route';
 import { UseDeFiContext } from '../../provider/UseDeFiProvider';
+import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
+import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
+import { useExecutor } from '../internal/useExecutor';
 import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 
 import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
 
 export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteShortcutPayload => {
-  const fallbackExecutorQuery = useAccount();
-  const { data: walletClient } = useWalletClient();
-
+  const { data: executor } = useExecutor();
+  const walletClient = useDeFiWalletClient();
   const context = useContext(UseDeFiContext);
 
   const [queryOptions, disabledReason] = useMemo((): [
@@ -25,24 +26,21 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
     const positionToken = getTokenAddressFromPosition(args.position);
     if (!positionToken) return [undefined, 'No position token'];
-
-    const fallbackExecutor = fallbackExecutorQuery.isConnected ? fallbackExecutorQuery.address : undefined;
-    const defaultedExecutor = args.executor ?? fallbackExecutor;
-    if (!defaultedExecutor) return [undefined, 'No executor passed or available from WalletClient'];
+    if (!executor) return [undefined, 'Not connected'];
 
     return [
       {
         apiKey: context.apiKey,
         transferMethod: args.options?.transferMethod ?? 'APPROVE_TRANSFERFROM',
         chainId: args.position.chainId,
-        executor: defaultedExecutor,
+        executor,
         amountIn: args.amountIn,
         tokenIn: args.tokenIn,
         tokenOut: positionToken as `0x${string}`,
       },
       undefined,
     ];
-  }, [args, context.apiKey, fallbackExecutorQuery]);
+  }, [args, context.apiKey, executor]);
 
   const enabledQuery = typeof queryOptions !== 'undefined';
   const {
@@ -72,11 +70,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
-      (approvalData) =>
-        walletClient?.sendTransaction({
-          ...approvalData.tx,
-          value: approvalData.tx.value ? BigInt(approvalData.tx.value) : undefined,
-        }),
+      (approvalData) => walletClient?.sendTransaction(formatTransaction(approvalData.tx)),
     );
 
     if (!transactionFuncs) return;
@@ -96,22 +90,14 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
-          execute: async () =>
-            walletClient?.sendTransaction({
-              ...approval.tx,
-              value: approval.tx.value ? BigInt(approval.tx.value) : undefined,
-            }),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx)),
         })),
         transfers: routeQueryResponse.transfers?.map((transfer) => ({
           token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,
           spender: transfer.spender,
-          execute: async () =>
-            walletClient?.sendTransaction({
-              ...transfer.tx,
-              value: transfer.tx.value ? BigInt(transfer.tx.value) : undefined,
-            }),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(transfer.tx)),
         })),
       };
     }

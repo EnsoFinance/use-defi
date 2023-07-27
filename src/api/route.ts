@@ -36,6 +36,9 @@ export const queryRouteWithApprovals = async (
         : 'Both tokenIn and amountIn must not be an array',
     );
 
+  const approve = options.transferMethod === 'APPROVE_TRANSFERFROM';
+  const transfer = options.transferMethod === 'TRANSFER';
+
   const route = await queryRoute({
     chainId,
     fromAddress: executor,
@@ -43,6 +46,8 @@ export const queryRouteWithApprovals = async (
     tokenIn,
     tokenOut,
     apiKey,
+    approve,
+    transfer,
   });
 
   if (!route) return { status: 'error', errorMessage: 'No route was found', route: null };
@@ -93,6 +98,8 @@ export const queryRouteWithApprovals = async (
         }),
       )
     ).filter((a) => a !== undefined) as ApproveTransaction[];
+  } else if (transferMethod === 'TRANSFER') {
+    // Do nothing
   } else {
     throw new Error(`${transferMethod} not implemented`);
   }

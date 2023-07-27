@@ -3,12 +3,15 @@ import { Address } from 'viem';
 import { components, operations } from '../generated/api';
 
 export type Hop = components['schemas']['Hop'];
-export type Transaction = components['schemas']['Transaction'];
+export type Transaction = Omit<components['schemas']['Transaction'], 'from'>;
 
-export type ApproveTransaction = components['schemas']['WalletApproveTransaction'];
+export type ApproveTransaction = Omit<components['schemas']['WalletApproveTransaction'], 'tx'> & {
+  // FIXME: Missing in API: No TX Schema only Record<never, never>
+  tx: Transaction;
+};
 
 // FIXME: Missing in API: Incorrect datatype, just using approve as placeholder
-export type TransferTransaction = components['schemas']['WalletApproveTransaction'];
+export type TransferTransaction = ApproveTransaction;
 
 export type BundleAction = components['schemas']['Action']['action'];
 
@@ -79,16 +82,18 @@ export type ExecutableRoute = {
   tx: Transaction;
 };
 
-export type QueryApproveResponse = components['schemas']['WalletApproveTransaction'];
-export type QueryApproveOptions = operations['WalletController_createApproveTransaction']['parameters']['query'];
+export type API_ApproveResponse = Omit<components['schemas']['WalletApproveTransaction'], 'tx'> & { tx: Transaction };
+export type API_ApproveOptions = operations['WalletController_createApproveTransaction']['parameters']['query'];
+
+export type API_RouteOptions = operations['RouterController_routeShortcutTransaction']['parameters']['query'];
 
 // FIXME: Missing in API
-export type QueryAllowancesOptions = {
+export type API_AllowancesOptions = {
   chainId?: number;
   fromAddress: Address;
 };
 // FIXME: Missing in API
-export type QueryAllowancesResponse = {
+export type API_AllowancesResponse = {
   token: Address;
   spender: Address;
   amount: string;
