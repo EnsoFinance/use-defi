@@ -41,7 +41,6 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
   };
 
   if (options.approve) {
-    console.log('adding approve');
     routeAction.args = {
       ...routeAction.args,
 
@@ -52,7 +51,6 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
   }
 
   if (options.transfer) {
-    console.log('adding transfer');
     routeAction.args = {
       ...routeAction.args,
 

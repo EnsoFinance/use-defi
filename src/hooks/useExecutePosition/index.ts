@@ -55,7 +55,6 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     enabled: enabledQuery,
     staleTime: 1000 * 60 * 2,
     notifyOnChangeProps: ['data', 'error'],
-    retry: false,
   });
 
   const preparedTransaction = useMemo(() => {

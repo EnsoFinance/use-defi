@@ -49,6 +49,9 @@ export interface paths {
     /** Returns transaction that approves your EnsoWallet to spend tokens */
     get: operations["WalletController_createApproveTransaction"];
   };
+  "/api/v1/wallet/balances": {
+    get: operations["WalletController_walletBalances"];
+  };
   "/api/v1/shortcuts/bundle": {
     /** Bundle a list of actions into a single tx */
     post: operations["BundleController_bundleShortcutTransaction"];
@@ -150,6 +153,8 @@ export interface components {
       decimals: number;
       /** @example https://metadata-service-dev.herokuapp.com/api/token/1/0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd/icon */
       logoURI: string;
+      /** @example 1 */
+      chainId: number;
     };
     TokenlessPosition: {
       /** @example 1 */
@@ -185,23 +190,11 @@ export interface components {
       protocol: components["schemas"]["Protocol"];
     };
     Position: {
-      /**
-       * @example [
-       *   null
-       * ]
-       */
+      /** @example [] */
       tokenlessPositions: components["schemas"]["TokenlessPosition"][];
-      /**
-       * @example [
-       *   null
-       * ]
-       */
+      /** @example [] */
       baseTokens: components["schemas"]["BaseToken"][];
-      /**
-       * @example [
-       *   null
-       * ]
-       */
+      /** @example [] */
       defiTokens: components["schemas"]["DefiToken"][];
     };
     Network: {
@@ -245,8 +238,8 @@ export interface components {
     Hop: {
       tokenIn: string[];
       positionInId: Record<string, never>;
-      tokenOut: string;
-      positionOutId: string;
+      tokenOut: string[];
+      positionOutId: Record<string, never>;
       protocol: string;
       action: string;
       primary: string;
@@ -261,7 +254,7 @@ export interface components {
       /** @description The route the shortcut will use */
       route: components["schemas"]["Hop"][];
       gas: number;
-      amountOut: string;
+      amountOut: Record<string, never>;
       /** @description Price impact in basis points, null if USD price not found */
       priceImpact: number;
       /** @description Block number the transaction was created on */
@@ -351,6 +344,40 @@ export interface operations {
 
   /** Returns defi tokens available to use in bundle shortcuts */
   DefiTokensController_defiTokens: {
+    parameters: {
+      query?: {
+        /**
+         * @description Address of an underlying token
+         * @example 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+         */
+        underlyingAddress?: unknown;
+        /**
+         * @description Address of the token to search for
+         * @example 0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84
+         */
+        tokenAddress?: unknown;
+        /**
+         * @description Protocol of the token to search for
+         * @example lido
+         */
+        protocol?: unknown;
+        /**
+         * @description Project of the token to search for
+         * @example lido
+         */
+        project?: unknown;
+        /**
+         * @description Symbol of the token to search for
+         * @example stETH
+         */
+        symbol?: unknown;
+        /**
+         * @description Chain ID of the token to search for
+         * @example 1
+         */
+        chainId?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -361,6 +388,25 @@ export interface operations {
   };
   /** Returns base tokens available to use in bundle shortcuts */
   BaseTokensController_baseTokens: {
+    parameters: {
+      query?: {
+        /**
+         * @description Symbol of the token to search for
+         * @example USDC
+         */
+        symbol?: unknown;
+        /**
+         * @description Name of the token to search for
+         * @example USD Coin
+         */
+        name?: unknown;
+        /**
+         * @description Chain ID of the token to search for
+         * @example 1
+         */
+        chainId?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -371,6 +417,40 @@ export interface operations {
   };
   /** Returns defi tokens available to use in bundle shortcuts */
   TokenlessPositionsController_tokenlessPositions: {
+    parameters: {
+      query?: {
+        /**
+         * @description Address of an underlying token
+         * @example 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+         */
+        underlyingAddress?: unknown;
+        /**
+         * @description Address of the pool to search for
+         * @example 0x777777c9898D384F785Ee44Acfe945efDFf5f3E0
+         */
+        poolAddress?: unknown;
+        /**
+         * @description Protocol of the position to search for
+         * @example morpho-aave
+         */
+        protocol?: unknown;
+        /**
+         * @description Project of the position to search for
+         * @example morpho-aave
+         */
+        project?: unknown;
+        /**
+         * @description Name of the position to search for
+         * @example 0x
+         */
+        name?: unknown;
+        /**
+         * @description Chain ID of the position to search for
+         * @example 1
+         */
+        chainId?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -381,6 +461,32 @@ export interface operations {
   };
   /** Returns defi tokens, base tokens and tokenless positions available to use in bundle shortcuts */
   PositionsController_positions: {
+    parameters: {
+      query?: {
+        /**
+         * @description Chain ID of the position to search for
+         * @example 1
+         */
+        chainId?: unknown;
+        /** @description Address of the token to search for */
+        tokenAddress?: unknown;
+        /** @description Address of the pool to search for */
+        poolAddress?: unknown;
+        /** @description Protocol of the position to search for */
+        protocol?: unknown;
+        /** @description Project of the position to search for */
+        project?: unknown;
+        /**
+         * @description Symbol of the token to search for
+         * @example stETH
+         */
+        symbol?: unknown;
+        /** @description Address of one of the underlying */
+        underlyingAddress?: unknown;
+        /** @description Name of the entity */
+        name?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -391,6 +497,20 @@ export interface operations {
   };
   /** Returns networks supported by the API */
   NetworksController_networks: {
+    parameters: {
+      query?: {
+        /**
+         * @description Title of the network to search for
+         * @example Ethereum
+         */
+        name?: unknown;
+        /**
+         * @description Chain ID of the network to search for
+         * @example 1
+         */
+        chainId?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -401,6 +521,30 @@ export interface operations {
   };
   /** Returns projects and relevant protocols available to use in bundle shortcuts */
   ProjectsController_projects: {
+    parameters: {
+      query?: {
+        /**
+         * @description Protocol of the project to search for
+         * @example aave-v3
+         */
+        protocol?: unknown;
+        /**
+         * @description ID of the project to search for
+         * @example aave-v3
+         */
+        id?: unknown;
+        /**
+         * @description Title of the project to search for
+         * @example Aave v3
+         */
+        title?: unknown;
+        /**
+         * @description Chain ID of the project to search for
+         * @example 1
+         */
+        chainId?: unknown;
+      };
+    };
     responses: {
       200: {
         content: {
@@ -472,7 +616,7 @@ export interface operations {
          * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
          * @example 0x6b175474e89094c44da98b954eedeac495271d0f
          */
-        tokenOut: string;
+        tokenOut: string[];
       };
     };
     responses: {
@@ -522,6 +666,20 @@ export interface operations {
           "application/json": components["schemas"]["WalletApproveTransaction"];
         };
       };
+    };
+  };
+  WalletController_walletBalances: {
+    parameters: {
+      query: {
+        /** @description Chain ID of the network to execute the transaction on */
+        chainId?: number;
+        /** @description Ethereum address of the eoaAddress to check balances wallet for */
+        eoaAddress: string;
+        tokenType: "defiTokens" | "baseTokens" | null;
+      };
+    };
+    responses: {
+      200: never;
     };
   };
   /** Bundle a list of actions into a single tx */
