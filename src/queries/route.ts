@@ -1,75 +1,113 @@
-import queryString from 'query-string';
 import { Address } from 'viem';
 
-import { ENSO_API } from '../constants';
-import { API_RouteOptions, ExecutableRoute } from '../types/api';
-import { BigNumberish } from '../types/enso';
-import { manyBigIntParseToString } from '../utils/bigint';
+import { getEnsoApiAllowance, getEnsoApiApprove } from '../api/approve';
+import { getEnsoApiRoute } from '../api/route';
+import { ApproveTransaction, ExecutableRoute, TransferTransaction } from '../types/api';
+import { BigNumberish, LoadingState, TransferMethods } from '../types/enso';
+import { addressCompare, isNativeToken } from '../utils/address';
 
-export type QueryRouteOptions = {
+export type QueryRouteWithApprovalsOptions = {
   chainId: number;
-  fromAddress: Address;
+  executor: Address;
+  transferMethod: TransferMethods;
   amountIn: BigNumberish | BigNumberish[];
   tokenIn: Address | Address[];
   tokenOut: Address;
-  approve?: boolean;
-  transfer?: boolean;
   apiKey: string;
 };
-export type QueryRouteResponse = ExecutableRoute;
 
-type APIError = { error: string; message: string; statusCode: number };
-type APIResponse = ExecutableRoute | APIError;
+export type QueryRouteWithApprovalsResponse = {
+  status: LoadingState;
+  errorMessage: string | null;
+  route: ExecutableRoute | null;
+  approvals?: ApproveTransaction[] | null;
+  transfers?: TransferTransaction[] | null;
+};
 
-export const queryRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
-  const queryParams = {
-    chainId: options.chainId,
-    fromAddress: options.fromAddress,
-  };
+export const queryRouteWithApprovals = async (
+  options: QueryRouteWithApprovalsOptions,
+): Promise<QueryRouteWithApprovalsResponse> => {
+  const { chainId, executor, amountIn, tokenIn, tokenOut, apiKey, transferMethod } = options;
 
-  const routeAction = {
-    protocol: 'enso',
-    action: 'route',
-    args: {
-      fromAddress: options.fromAddress,
-      amountIn: manyBigIntParseToString(Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn]),
-      tokenIn: Array.isArray(options.tokenIn) ? options.tokenIn : [options.tokenIn],
-      tokenOut: options.tokenOut,
-    } as API_RouteOptions,
-  };
+  if (Array.isArray(amountIn) != Array.isArray(tokenIn))
+    throw new Error(
+      Array.isArray(tokenIn)
+        ? 'Both tokenIn and amountIn must be an Array'
+        : 'Both tokenIn and amountIn must not be an array',
+    );
 
-  if (options.approve) {
-    routeAction.args = {
-      ...routeAction.args,
+  const approve = options.transferMethod === 'APPROVE_TRANSFERFROM';
+  const transfer = options.transferMethod === 'TRANSFER';
 
-      tokenInAmountToApprove: manyBigIntParseToString(
-        Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
-      ),
-    };
-  }
-
-  if (options.transfer) {
-    routeAction.args = {
-      ...routeAction.args,
-
-      tokenInAmountToTransfer: manyBigIntParseToString(
-        Array.isArray(options.amountIn) ? options.amountIn : [options.amountIn],
-      ),
-    };
-  }
-
-  const routeResponse = await fetch(`${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`, {
-    body: JSON.stringify([routeAction]),
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${options.apiKey}`,
-      'Content-Type': 'application/json',
-    },
+  const route = await getEnsoApiRoute({
+    chainId,
+    fromAddress: executor,
+    amountIn,
+    tokenIn,
+    tokenOut,
+    apiKey,
+    approve,
+    transfer,
   });
-  const route = (await routeResponse.json()) as APIResponse;
-  if (!(route as ExecutableRoute).tx) {
-    const err = route as APIError;
-    throw new Error(err.error && err.message ? err.message : 'No valid response');
+
+  if (!route) return { status: 'error', errorMessage: 'No route was found', route: null };
+
+  let approvals: ApproveTransaction[] | null = null;
+  // let transfers: TransferTransaction[] | null = null;
+
+  if (transferMethod === 'APPROVE_TRANSFERFROM') {
+    const allowances = await getEnsoApiAllowance({ fromAddress: executor, chainId });
+
+    // Calculate approvals
+    const approvalAmountsNeeded: Record<string, BigNumberish> = {};
+
+    (Array.isArray(tokenIn) ? tokenIn : [tokenIn]).forEach((token, index) => {
+      if (!isNativeToken(token)) {
+        const amount = Array.isArray(amountIn) ? amountIn[index] : amountIn;
+
+        if (!allowances) {
+          // No other approvals found, use maximum amount
+          approvalAmountsNeeded[token] = amount;
+        } else {
+          const approvalRecord = allowances.find(({ token: approvedToken }) => addressCompare(approvedToken, token));
+
+          if (!approvalRecord) {
+            // No specific record for this token, use maximum amount
+            approvalAmountsNeeded[token] = amount;
+          } else {
+            // Has existing approval, check for top-up
+            const remainder = BigInt(approvalRecord.amount) - BigInt(amount);
+
+            if (remainder < 0) {
+              approvalAmountsNeeded[token] = -remainder;
+            }
+          }
+        }
+      }
+    });
+
+    approvals = (
+      await Promise.all(
+        Object.entries(approvalAmountsNeeded).map(async ([token, amount]) => {
+          // TODO: Some of these could fail?
+          return await getEnsoApiApprove({
+            fromAddress: executor,
+            tokenAddress: token as Address,
+            amount: amount.toString(),
+          });
+        }),
+      )
+    ).filter((a) => a !== undefined) as ApproveTransaction[];
+  } else if (options.transferMethod === 'PERMIT2') {
+    throw new Error(`${transferMethod} not implemented`);
+  } else {
+    // Do nothing, for `TRANSFER` and `NONE` transfermethods.
   }
-  return route as ExecutableRoute;
+
+  return {
+    route,
+    approvals,
+    status: 'success',
+    errorMessage: null,
+  };
 };

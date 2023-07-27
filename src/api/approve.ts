@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { ENSO_API } from '../constants';
 import { API_AllowancesOptions, API_AllowancesResponse, API_ApproveOptions, API_ApproveResponse } from '../types/api';
 
-export const queryApprove = async (options: API_ApproveOptions): Promise<API_ApproveResponse | undefined> => {
+export const getEnsoApiApprove = async (options: API_ApproveOptions): Promise<API_ApproveResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId ?? 1,
     fromAddress: options.fromAddress,
@@ -19,7 +19,9 @@ export const queryApprove = async (options: API_ApproveOptions): Promise<API_App
   return json;
 };
 
-export const queryApprovals = async (options: API_AllowancesOptions): Promise<API_AllowancesResponse | undefined> => {
+export const getEnsoApiAllowance = async (
+  options: API_AllowancesOptions,
+): Promise<API_AllowancesResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId ?? 1,
     fromAddress: options.fromAddress,

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 
-import { queryPositions } from '../../queries/positions';
+import { getEnsoApiPositions } from '../../api/positions';
 import { PoolPosition, Position } from '../../types/api';
 import { addressCompare } from '../../utils/address';
 import { getTokenAddressFromPosition } from '../../utils/position';
@@ -11,8 +11,14 @@ import { UsePositionsArgs, UsePositionsPayload } from './types';
 
 type FilterType = (row: Position) => boolean;
 
+/**
+ * Finds available positions on Enso based on specified options.
+ *
+ * @example const { data: positions } = usePositions({ chain: 1, protocol: 'aave-v2', token: '0xBcca60bB61934080951369a648Fb03DF4F96263C' })
+ */
+
 export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
-  const { isLoading, error, data } = useQuery('usePositions', queryPositions);
+  const { isLoading, error, data } = useQuery('usePositions', getEnsoApiPositions);
 
   const loadingState = useLoadingStateFromQuery({ data, error, isLoading });
 

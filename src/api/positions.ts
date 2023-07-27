@@ -4,7 +4,7 @@ import { Position } from '../types/api';
 export type QueryMetaPositionsArgs = Record<never, never>;
 export type QueryPositionsResponse = Position[];
 
-export const queryPositions = async (): Promise<QueryPositionsResponse> => {
+export const getEnsoApiPositions = async (): Promise<QueryPositionsResponse> => {
   const response = await fetch(USE_POSITIONS_DATA_SOURCE);
 
   const json = (await response.json()) as QueryPositionsResponse;

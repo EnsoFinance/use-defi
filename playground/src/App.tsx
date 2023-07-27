@@ -9,34 +9,31 @@ import Connect from './Connect';
 import LoadingGuard from './LoadingGuard';
 
 function App() {
-  const tokenIn = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
+  const tokenIn = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
   const tokenOut = '0x6b175474e89094c44da98b954eedeac495271d0f';
-  const protocol = undefined;
-  const amount = parseUnits('1', 8);
+  // const protocol = undefined;
+  const amount = parseUnits('0.001', 18);
 
-  const { data, status: positionStatus } = usePositions({
+  const { data: positions, status: positionStatus } = usePositions({
     chain: 1,
     token: tokenOut,
   });
-
-  const executeOptions = useMemo((): UseExecutePositionArgs | undefined => {
-    if (!data || !data[0]) return undefined;
-
-    return {
-      position: data[0],
-      tokenIn: tokenIn,
-      amountIn: amount,
-    };
-  }, [data]);
 
   const {
     executeRoute,
     executeApprovalsOrTransfers,
     executionDetails,
-    status: executeShortcutStatus,
-  } = useExecutePosition(executeOptions);
+    errorMessage,
+    status: executePositionStatus,
+  } = useExecutePosition({
+    position: positions ? positions[0] : undefined,
+    tokenIn: tokenIn,
+    amountIn: amount,
+    options: {
+      transferMethod: 'NONE',
+    },
+  });
 
-  const hasPosition = !!executeOptions;
   const hasRoute = !!executionDetails;
 
   return (
@@ -45,15 +42,15 @@ function App() {
         <code>use-defi code playground</code>
       </h2>
       <LoadingGuard isLoading={positionStatus === 'loading'}>
-        {hasPosition ? (
-          <div className="code-block">{executeOptions.position?.name ?? ''}</div>
+        {positions && positions[0] ? (
+          <div className="code-block">{positions[0].name ?? ''}</div>
         ) : (
           <div className="code-block">
-            No shortcut route has been found for {tokenIn} to {tokenOut}
+            Position no found for {tokenIn} to {tokenOut}
           </div>
         )}
       </LoadingGuard>
-      <LoadingGuard isLoading={executeShortcutStatus === 'loading'}>
+      <LoadingGuard isLoading={executePositionStatus === 'loading'}>
         {hasRoute ? (
           <>
             <div className="code-block">Route found for shortcut. Click to run</div>
@@ -65,6 +62,8 @@ function App() {
               <br />
             </div>
           </>
+        ) : executePositionStatus !== 'loading' ? (
+          errorMessage
         ) : null}
       </LoadingGuard>
       <br />

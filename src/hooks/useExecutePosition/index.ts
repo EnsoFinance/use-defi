@@ -1,8 +1,8 @@
 import { useCallback, useContext, useMemo } from 'react';
 import { useQuery } from 'react-query';
 
-import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../api/route';
 import { UseDeFiContext } from '../../provider/UseDeFiProvider';
+import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
 import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
 import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
@@ -11,6 +11,9 @@ import { useLoadingStateFromQuery } from '../internal/useLoadingStateFromQuery';
 
 import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
 
+/**
+ * Prepares a position for execution, returning details about route being taken, approvals and transfers that need to be run before.
+ */
 export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteShortcutPayload => {
   const { data: executor } = useExecutor();
   const walletClient = useDeFiWalletClient();
@@ -21,8 +24,10 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     string | undefined,
   ] => {
     if (!args) return [undefined, 'No arguments to hook'];
+    if (!args.position) return [undefined, undefined]; // No error message, simply means positions aren't loaded yet
     if (!context.apiKey) return [undefined, 'No API key'];
-    if (!args.position) return [undefined, 'No position'];
+    if (!args.tokenIn) return [undefined, 'No tokenIn'];
+    if (!args.amountIn) return [undefined, 'No amount specified'];
 
     const positionToken = getTokenAddressFromPosition(args.position);
     if (!positionToken) return [undefined, 'No position token'];
@@ -56,11 +61,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const preparedTransaction = useMemo(() => {
     if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route) return undefined;
-    return {
-      to: routeQueryResponse.route.tx.to as `0x${string}`,
-      data: routeQueryResponse.route.tx.data as `0x${string}`,
-      value: BigInt(routeQueryResponse.route.tx.value) ?? BigInt(0),
-    };
+    return formatTransaction(routeQueryResponse.route.tx);
   }, [routeQueryResponse]);
 
   const executeRoute = useCallback(async () => {
@@ -108,7 +109,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     data: routeQueryResponse,
     error: routeQueryError,
   });
-
+  console.log(routeQueryError);
   return {
     status: loadingState,
     hasRoute: !enabledQuery || !routeQueryResponse,
@@ -117,7 +118,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
       routeQueryResponse?.approvals &&
       routeQueryResponse?.approvals?.length > 0
     ),
-    errorMessage: disabledReason,
+    errorMessage: routeQueryError ? (routeQueryError as any).toString() : disabledReason,
     executionDetails: executionDetails,
     executeRoute,
     executeApprovalsOrTransfers,

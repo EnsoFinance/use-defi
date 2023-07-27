@@ -31,18 +31,18 @@ export type UseExecuteShortcutPayload = {
 };
 
 export type UseExecutePositionArgs = {
-  position: Position | undefined;
+  position?: Position | undefined;
   chainId?: number;
   executor?: Address;
   options?: UseExecutePositionArgsOptions;
 } & (
   | {
-      tokenIn: Address[];
-      amountIn: BigNumberish[];
+      tokenIn?: Address[];
+      amountIn?: BigNumberish[];
     }
   | {
-      tokenIn: Address;
-      amountIn: BigNumberish;
+      tokenIn?: Address;
+      amountIn?: BigNumberish;
     }
 );
 
