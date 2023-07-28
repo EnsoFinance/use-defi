@@ -1,6 +1,6 @@
 {
   "name": "@ensofinance/use-defi",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "React hooks library to use with enso shortcuts infrastructure",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "author": "@ensofinance",
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
