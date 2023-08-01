@@ -1,7 +1,10 @@
+import axios from 'axios';
 import queryString from 'query-string';
 
 import { ENSO_API } from '../constants';
 import { API_AllowancesOptions, API_AllowancesResponse, API_ApproveOptions, API_ApproveResponse } from '../types/api';
+import { API_Response } from '../types/enso';
+import { parseApiErrorOrReturn } from '../utils/parseApiError';
 
 export const getEnsoApiApprove = async (options: API_ApproveOptions): Promise<API_ApproveResponse | undefined> => {
   const queryParams = {
@@ -11,12 +14,11 @@ export const getEnsoApiApprove = async (options: API_ApproveOptions): Promise<AP
     amount: options.amount,
   };
 
-  const response = await fetch(`${ENSO_API}/api/v1/wallet/approve?${queryString.stringify(queryParams)}`);
+  const { data } = await axios.get<API_Response<API_ApproveResponse>>(
+    `${ENSO_API}/api/v1/wallet/approve?${queryString.stringify(queryParams)}`,
+  );
 
-  const json = (await response.json()) as API_ApproveResponse;
-
-  if (!json.tx) throw new Error('No valid response');
-  return json;
+  return parseApiErrorOrReturn(data);
 };
 
 export const getEnsoApiAllowance = async (
@@ -27,10 +29,9 @@ export const getEnsoApiAllowance = async (
     fromAddress: options.fromAddress,
   };
 
-  const response = await fetch(`${ENSO_API}/api/v1/wallet/approvals?${queryString.stringify(queryParams)}`);
+  const { data } = await axios.get<API_Response<API_AllowancesResponse>>(
+    `${ENSO_API}/api/v1/wallet/approvals?${queryString.stringify(queryParams)}`,
+  );
 
-  const json = (await response.json()) as API_AllowancesResponse;
-
-  if (!Array.isArray(json)) throw new Error('No valid response');
-  return json;
+  return parseApiErrorOrReturn(data);
 };

@@ -1,8 +1,5 @@
 import { useExecutePosition, usePositions } from '@ensofinance/use-defi';
-import { useMemo } from 'react';
 import { parseUnits } from 'viem';
-
-import { UseExecutePositionArgs } from '../../src/hooks/useExecutePosition/types';
 
 import './App.css';
 import Connect from './Connect';
@@ -18,6 +15,8 @@ function App() {
     chain: 1,
     token: tokenOut,
   });
+
+  if (positions) console.log(positions[0]);
 
   const {
     executeRoute,

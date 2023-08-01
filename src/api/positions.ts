@@ -1,14 +1,12 @@
+import axios from 'axios';
+
 import { USE_POSITIONS_DATA_SOURCE } from '../constants';
-import { Position } from '../types/api';
+import { API_GetPositionsResponse } from '../types/api';
+import { API_Response } from '../types/enso';
+import { parseApiErrorOrReturn } from '../utils/parseApiError';
 
-export type QueryMetaPositionsArgs = Record<never, never>;
-export type QueryPositionsResponse = Position[];
+export const getEnsoApiPositions = async (): Promise<API_GetPositionsResponse> => {
+  const { data } = await axios.get<API_Response<API_GetPositionsResponse>>(USE_POSITIONS_DATA_SOURCE);
 
-export const getEnsoApiPositions = async (): Promise<QueryPositionsResponse> => {
-  const response = await fetch(USE_POSITIONS_DATA_SOURCE);
-
-  const json = (await response.json()) as QueryPositionsResponse;
-
-  if (!Array.isArray(json)) throw new Error('No valid response');
-  return json;
+  return parseApiErrorOrReturn(data);
 };

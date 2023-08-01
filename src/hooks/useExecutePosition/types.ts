@@ -1,10 +1,7 @@
 import { Address } from 'viem';
 
 import { ExecutableRoute, Position } from '../../types/api';
-import { BigNumberish, LoadingState, TransferMethods } from '../../types/enso';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TransactionFunc = () => Promise<any> | void;
+import { BigNumberish, LoadingState, TransactionFunc, TransferMethods } from '../../types/enso';
 
 export type UseExecuteShortcutPayload = {
   executionDetails?: {

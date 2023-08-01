@@ -1,9 +1,18 @@
-import { Address } from 'viem';
+import { Address, Hash } from 'viem';
 
 import { components, operations } from '../generated/api';
 
+/**
+ * This file uses the typing generated from the api.enso.finance/api-json endpoint.
+ *
+ * However, as the API changes a lot currently, little to no typings are consistent, up-to-date or real.
+ * Thus, a lot of response types had to be manually set.
+ */
+
 export type Hop = components['schemas']['Hop'];
-export type Transaction = Omit<components['schemas']['Transaction'], 'from'>;
+export type Transaction = Omit<components['schemas']['Transaction'], 'from'> & {
+  from?: Address;
+};
 
 export type ApproveTransaction = Omit<components['schemas']['WalletApproveTransaction'], 'tx'> & {
   // FIXME: Missing in API: No TX Schema only Record<never, never>
@@ -86,18 +95,18 @@ export type API_ApproveResponse = Omit<components['schemas']['WalletApproveTrans
 export type API_ApproveOptions = operations['WalletController_createApproveTransaction']['parameters']['query'];
 
 // FIXME: These are marked as `string[]` in the typings, but the bundle endpoint can't handle single value arrays and will fail.
-type API_RouteOptions_Overwrites = {
+export type API_RouteOptions = {
   tokenIn: string;
   amountIn: string;
   tokenInAmountToTransfer?: string;
   tokenInAmountToApprove?: string;
 };
 
-export type API_RouteOptions = Omit<
-  operations['RouterController_routeShortcutTransaction']['parameters']['query'],
-  keyof API_RouteOptions_Overwrites
-> &
-  API_RouteOptions_Overwrites;
+// FIXME: Missing in API
+export type API_GetPositionsOptions = Record<never, never>;
+
+// FIXME: Missing in API
+export type API_GetPositionsResponse = Position[];
 
 // FIXME: Missing in API
 export type API_AllowancesOptions = {
@@ -110,3 +119,27 @@ export type API_AllowancesResponse = {
   spender: Address;
   amount: string;
 }[];
+
+// FIXME: Missing in API
+export type API_MultichainOptions = {
+  sourceChainId: number;
+  destinationChainId: number;
+  fromAddress: string;
+  tokenIn: string;
+  tokenOut: string;
+  amountIn: string;
+  slippage: string;
+  apiKey: string;
+};
+
+// FIXME: Missing in API
+export type API_MultichainResponse = {
+  createdAt: number;
+  tx: Transaction & {
+    to: Address;
+    data: Hash;
+    from: string;
+    value?: string;
+    chainId: number;
+  };
+};

@@ -1,10 +1,12 @@
+import axios from 'axios';
 import queryString from 'query-string';
 import { Address } from 'viem';
 
 import { ENSO_API } from '../constants';
 import { API_RouteOptions, ExecutableRoute } from '../types/api';
-import { BigNumberish } from '../types/enso';
+import { API_Response, BigNumberish } from '../types/enso';
 import { manyBigIntParseToString } from '../utils/bigint';
+import { parseApiErrorOrReturn } from '../utils/parseApiError';
 
 export type QueryRouteOptions = {
   chainId: number;
@@ -18,10 +20,7 @@ export type QueryRouteOptions = {
 };
 export type QueryRouteResponse = ExecutableRoute;
 
-type APIError = { error: string; message: string; statusCode: number };
-type APIResponse = ExecutableRoute | APIError;
-
-export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
+export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
   const queryParams = {
     chainId: options.chainId,
     fromAddress: options.fromAddress,
@@ -60,18 +59,18 @@ export const getEnsoApiRoute = async (options: QueryRouteOptions): Promise<Query
     };
   }
 
-  const routeResponse = await fetch(`${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`, {
-    body: JSON.stringify([routeAction]),
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${options.apiKey}`,
-      'Content-Type': 'application/json',
+  const actions = [routeAction];
+
+  const { data } = await axios.post<API_Response<QueryRouteResponse>>(
+    `${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`,
+    JSON.stringify(actions),
+    {
+      headers: {
+        Authorization: `Bearer ${options.apiKey}`,
+        'Content-Type': 'application/json',
+      },
     },
-  });
-  const route = (await routeResponse.json()) as APIResponse;
-  if (!(route as ExecutableRoute).tx) {
-    const err = route as APIError;
-    throw new Error(err.error && err.message ? err.message : 'No valid response');
-  }
-  return route as ExecutableRoute;
+  );
+
+  return parseApiErrorOrReturn(data);
 };
