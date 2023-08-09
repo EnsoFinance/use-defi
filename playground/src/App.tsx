@@ -1,4 +1,4 @@
-import { useExecutePosition, usePositions } from '@ensofinance/use-defi';
+import { useExecutePosition, useMultichainRoute, usePositions } from '@ensofinance/use-defi';
 import { parseUnits } from 'viem';
 
 import './App.css';
@@ -16,7 +16,7 @@ function App() {
     token: tokenOut,
   });
 
-  if (positions) console.log(positions[0]);
+  // if (positions) console.log(positions[0]);
 
   const {
     executeRoute,
@@ -31,6 +31,14 @@ function App() {
     options: {
       transferMethod: 'NONE',
     },
+  });
+
+  const { execute: executeMultichainRoute } = useMultichainRoute({
+    tokenIn,
+    tokenOut: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
+    destinationChainId: 1,
+    sourceChainId: 42161,
+    amountIn: amount,
   });
 
   const hasRoute = !!executionDetails;
@@ -49,6 +57,7 @@ function App() {
           </div>
         )}
       </LoadingGuard>
+      <button onClick={executeMultichainRoute}>Execute Multichain Route</button>
       <LoadingGuard isLoading={executePositionStatus === 'loading'}>
         {hasRoute ? (
           <>
