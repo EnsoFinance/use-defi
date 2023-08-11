@@ -1,17 +1,17 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 
-import { getEnsoApiMultichainRoute } from '../../api/multichain';
-import { API_MultichainOptions } from '../../types/api';
+import { getEnsoApiCrossChainRoute } from '../../api/multichain';
+import { API_CrossChainOptions } from '../../types/api';
 import { useDeFiContext } from '../internal/useDeFiContext';
 import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
 import { useExecutor } from '../internal/useExecutor';
 
-import { UseMultichainRouteArgs, UseMultichainRoutePayload } from './types';
+import { UseCrossChainRouteArgs, UseCrossChainRoutePayload } from './types';
 
-type QueryOptionsWithError = [API_MultichainOptions | undefined, string | undefined];
+type QueryOptionsWithError = [API_CrossChainOptions | undefined, string | undefined];
 
-export const useMultichainRoute = (args: UseMultichainRouteArgs | undefined): UseMultichainRoutePayload => {
+export const useCrossChainRoute = (args: UseCrossChainRouteArgs | undefined): UseCrossChainRoutePayload => {
   const { data: executor } = useExecutor();
   const walletClient = useDeFiWalletClient();
   const context = useDeFiContext();
@@ -36,7 +36,7 @@ export const useMultichainRoute = (args: UseMultichainRouteArgs | undefined): Us
     ];
   }, [args, context, executor]);
 
-  const { data, status, error } = useQuery('useMultichainRoute', async () => getEnsoApiMultichainRoute(queryOptions!), {
+  const { data, status, error } = useQuery('useCrossChainRoute', async () => getEnsoApiCrossChainRoute(queryOptions!), {
     enabled: !!queryOptions,
   });
 

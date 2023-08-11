@@ -121,7 +121,7 @@ export type API_AllowancesResponse = {
 }[];
 
 // FIXME: Missing in API
-export type API_MultichainOptions = {
+export type API_CrossChainOptions = {
   sourceChainId: number;
   destinationChainId: number;
   fromAddress: string;
@@ -133,7 +133,7 @@ export type API_MultichainOptions = {
 };
 
 // FIXME: Missing in API
-export type API_MultichainResponse = {
+export type API_CrossChainResponse = {
   createdAt: number;
   tx: Transaction & {
     to: Address;

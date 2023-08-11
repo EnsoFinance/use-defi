@@ -60,6 +60,9 @@ export interface paths {
     /** Build a shortcut from multiple contract calls */
     post: operations["BuilderController_builderShortcutTransaction"];
   };
+  "/api/experimental/multichain/shortcut/route/{sourceChainId}/{destinationChainId}/{fromAddress}": {
+    post: operations["SocketController_multichainRouteShortcutTransactionWithSocket"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -329,6 +332,29 @@ export interface components {
        * ]
        */
       calls: components["schemas"]["CallsToBuild"][];
+    };
+    MultichainRouteShortcutInputsBase: {
+      /**
+       * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       */
+      tokenIn: string;
+      /**
+       * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example 0x6b175474e89094c44da98b954eedeac495271d0f
+       */
+      tokenOut: string;
+      /**
+       * @description Amount of tokenIn to swap in wei
+       * @example "1000000000000000000"
+       */
+      amountIn: string;
+      /**
+       * @description Slippage in basis points (1/10000)
+       * @default 300
+       * @example 300
+       */
+      slippage?: string;
     };
   };
   responses: never;
@@ -603,7 +629,12 @@ export interface operations {
          */
         amountIn: string[];
         /**
-         * @description Slippage in basis points (1/10000)
+         * @description Minimum amount out in wei. If specified, slippage should not be specified
+         * @example 1000000000000000000
+         */
+        minAmountOut?: string[];
+        /**
+         * @description Slippage in basis points (1/10000). If specified, minAmountOut should not be specified
          * @example 300
          */
         slippage?: string;
@@ -714,6 +745,23 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["BuilderShortcutRequestDto"];
+      };
+    };
+    responses: {
+      201: never;
+    };
+  };
+  SocketController_multichainRouteShortcutTransactionWithSocket: {
+    parameters: {
+      path: {
+        sourceChainId: number;
+        destinationChainId: number;
+        fromAddress: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MultichainRouteShortcutInputsBase"];
       };
     };
     responses: {
