@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useWalletClient, WalletClient } from 'wagmi';
 
-import { useDefiContext } from './useDeFiContext';
+import { useDeFiContext } from './useDeFiContext';
 
 export const useDeFiWalletClient = (): WalletClient | undefined => {
   const walletClientData = useWalletClient();
-  const deFiProviderContext = useDefiContext();
+  const deFiProviderContext = useDeFiContext();
 
   const walletClient = useMemo(() => {
     return deFiProviderContext.walletClient ?? walletClientData.data ?? undefined;

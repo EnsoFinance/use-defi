@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
 import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
-import { useDefiContext } from '../internal/useDeFiContext';
+import { useDeFiContext } from '../internal/useDeFiContext';
 import { useDeFiWalletClient } from '../internal/useDeFiWalletClient';
 import { useExecutor } from '../internal/useExecutor';
 
@@ -16,14 +16,14 @@ import { UseExecutePositionArgs, UseExecuteShortcutPayload } from './types';
 export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteShortcutPayload => {
   const { data: executor } = useExecutor();
   const walletClient = useDeFiWalletClient();
-  const context = useDefiContext();
+  const context = useDeFiContext();
 
   const [queryOptions, disabledReason] = useMemo((): [
     QueryRouteWithApprovalsOptions | undefined,
     string | undefined,
   ] => {
-    if (!args) return [undefined, 'No arguments to hook'];
-    if (!args.position) return [undefined, undefined]; // No error message, simply means positions aren't loaded yet
+    if (!args) return [undefined, 'No arguments given to hook'];
+    if (!args.position) return [undefined, 'No position'];
     if (!context.apiKey) return [undefined, 'No API key'];
     if (!args.tokenIn) return [undefined, 'No tokenIn'];
     if (!args.amountIn) return [undefined, 'No amount specified'];

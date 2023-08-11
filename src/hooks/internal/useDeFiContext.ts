@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { UseDeFiContext } from '../../provider/UseDeFiProvider';
 
-export const useDefiContext = () => {
+export const useDeFiContext = () => {
   const context = useContext(UseDeFiContext);
 
   if (!context) {

@@ -24,7 +24,7 @@ export default [
         preventAssignment: true,
       }),
       peerDepsExternal(),
-      resolve(),
+      resolve({ jsnext: true, preferBuiltins: true, browser: true }),
       commonjs(),
       esbuild({
         jsx: 'transform', // default, or 'preserve'

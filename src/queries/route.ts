@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 
 import { getEnsoApiAllowance, getEnsoApiApprove } from '../api/approve';
-import { getEnsoApiRoute } from '../api/route';
+import { getEnsoApiBundleRoute } from '../api/route';
 import { ApproveTransaction, ExecutableRoute, TransferTransaction } from '../types/api';
 import { BigNumberish, LoadingState, TransferMethods } from '../types/enso';
 import { addressCompare, isNativeToken } from '../utils/address';
@@ -39,7 +39,7 @@ export const queryRouteWithApprovals = async (
   const approve = options.transferMethod === 'APPROVE_TRANSFERFROM';
   const transfer = options.transferMethod === 'TRANSFER';
 
-  const route = await getEnsoApiRoute({
+  const route = await getEnsoApiBundleRoute({
     chainId,
     fromAddress: executor,
     amountIn,
