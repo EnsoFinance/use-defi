@@ -1,9 +1,9 @@
 import { Address } from 'viem';
 
-import { API_MultichainResponse } from '../../types/api';
+import { API_CrossChainResponse } from '../../types/api';
 import { BigNumberish, LoadingState, TransactionFunc } from '../../types/enso';
 
-export type UseMultichainRouteArgs = {
+export type UseCrossChainRouteArgs = {
   sourceChainId: number;
   destinationChainId: number;
   tokenIn: Address;
@@ -14,9 +14,9 @@ export type UseMultichainRouteArgs = {
   };
 };
 
-export type UseMultichainRoutePayload = {
+export type UseCrossChainRoutePayload = {
   status: LoadingState;
   errorMessage?: string;
-  tx?: API_MultichainResponse['tx'];
+  tx?: API_CrossChainResponse['tx'];
   execute: TransactionFunc;
 };
