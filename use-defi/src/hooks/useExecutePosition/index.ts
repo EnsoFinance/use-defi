@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from 'wagmi';
 
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
 import { formatTransaction } from '../../utils/formatTransaction';
@@ -51,7 +51,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     data: routeQueryResponse,
     status,
     error: routeQueryError,
-  } = useQuery('useExecuteShortcut', async () => queryRouteWithApprovals(queryOptions!), {
+  } = useQuery(['useExecuteShortcut'], async () => queryRouteWithApprovals(queryOptions!), {
     enabled: enabledQuery,
     staleTime: 1000 * 60 * 2,
     notifyOnChangeProps: ['data', 'error'],
@@ -69,7 +69,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
-      (approvalData) => walletClient?.sendTransaction(formatTransaction(approvalData.tx)),
+      (approvalData: any) => walletClient?.sendTransaction(formatTransaction(approvalData.tx)),
     );
 
     if (!transactionFuncs) return;
@@ -84,14 +84,14 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           ...routeQueryResponse.route,
           execute: executeRoute,
         },
-        approvals: routeQueryResponse.approvals?.map((approval) => ({
+        approvals: routeQueryResponse.approvals?.map((approval: any) => ({
           token: approval.token as `0x${string}`,
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
           execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx)),
         })),
-        transfers: routeQueryResponse.transfers?.map((transfer) => ({
+        transfers: routeQueryResponse.transfers?.map((transfer: any) => ({
           token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,

@@ -1,8 +1,17 @@
 {
-  "name": "use-defi-monorepo",
+  "name": "@ensofinance/use-defi",
   "version": "0.2.3",
   "description": "React hooks library to use with enso shortcuts infrastructure",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "pnpm generate",
@@ -56,8 +65,5 @@
     "vite": "^4.4.0",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.33.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }

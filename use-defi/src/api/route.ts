@@ -1,5 +1,3 @@
-import axios from 'axios';
-import queryString from 'query-string';
 import { Address } from 'viem';
 
 import { ENSO_API } from '../constants';
@@ -22,7 +20,7 @@ export type QueryRouteResponse = ExecutableRoute;
 
 export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
   const queryParams = {
-    chainId: options.chainId,
+    chainId: String(options.chainId),
     fromAddress: options.fromAddress,
   };
 
@@ -61,16 +59,16 @@ export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise
 
   const actions = [routeAction];
 
-  const { data } = await axios.post<API_Response<QueryRouteResponse>>(
-    `${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`,
-    JSON.stringify(actions),
-    {
-      headers: {
-        Authorization: `Bearer ${options.apiKey}`,
-        'Content-Type': 'application/json',
-      },
+  const response = await fetch(`${ENSO_API}/api/v1/shortcuts/bundle?${new URLSearchParams(queryParams)}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${options.apiKey}`,
+      'Content-Type': 'application/json',
     },
-  );
+    body: JSON.stringify(actions),
+  });
+
+  const data = await response.json();
 
   return parseApiErrorOrReturn(data);
 };

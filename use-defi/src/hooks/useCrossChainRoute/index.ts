@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from 'wagmi';
 
 import { getEnsoApiCrossChainRoute } from '../../api/multichain';
 import { API_CrossChainOptions } from '../../types/api';
@@ -36,9 +36,13 @@ export const useCrossChainRoute = (args: UseCrossChainRouteArgs | undefined): Us
     ];
   }, [args, context, executor]);
 
-  const { data, status, error } = useQuery('useCrossChainRoute', async () => getEnsoApiCrossChainRoute(queryOptions!), {
-    enabled: !!queryOptions,
-  });
+  const { data, status, error } = useQuery(
+    ['useCrossChainRoute'],
+    async () => getEnsoApiCrossChainRoute(queryOptions!),
+    {
+      enabled: !!queryOptions,
+    },
+  );
 
   const preparedTransaction = useMemo(() => {
     if (!data) return undefined;

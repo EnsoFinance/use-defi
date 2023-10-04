@@ -1,4 +1,4 @@
-import { useExecutePosition, useMultichainRoute, usePositions } from '@ensofinance/use-defi';
+import { useCrossChainRoute, useExecutePosition, usePositions } from '@ensofinance/use-defi';
 import { parseUnits } from 'viem';
 
 import './App.css';
@@ -33,7 +33,7 @@ function App() {
     },
   });
 
-  const { execute: executeMultichainRoute } = useMultichainRoute({
+  const { execute: executeMultichainRoute } = useCrossChainRoute({
     tokenIn,
     tokenOut: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     destinationChainId: 1,
