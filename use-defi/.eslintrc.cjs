@@ -14,7 +14,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
     tsconfigRootDir: __dirname,
-    project: ['./use-defi/tsconfig.json', './playground/tsconfig.json'],
+    project: ['./tsconfig.json'],
   },
   plugins: ['react-refresh'],
   rules: {
@@ -22,6 +22,5 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-explicit-any': ['warn'],
     '@typescript-eslint/no-unsafe-assignment': 'off',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
   },
 };

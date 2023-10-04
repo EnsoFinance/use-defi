@@ -41,7 +41,7 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
     }
 
     if (data) {
-      return data.filter((metaPosition: any) => filters.every((filter) => filter(metaPosition)));
+      return data.filter((metaPosition: Position) => filters.every((filter) => filter(metaPosition)));
     }
 
     return [];

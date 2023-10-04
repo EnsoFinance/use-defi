@@ -58,9 +58,10 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
   });
 
   const preparedTransaction = useMemo(() => {
-    if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route) return undefined;
-    return formatTransaction(routeQueryResponse.route.tx);
-  }, [routeQueryResponse]);
+    if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route || !walletClient)
+      return undefined;
+    return formatTransaction(routeQueryResponse.route.tx, walletClient?.chain);
+  }, [routeQueryResponse, walletClient]);
 
   const executeRoute = useCallback(async () => {
     if (!preparedTransaction) throw new Error('No route execution transaction available');
@@ -69,7 +70,7 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
-      (approvalData: any) => walletClient?.sendTransaction(formatTransaction(approvalData.tx)),
+      (approvalData) => walletClient?.sendTransaction(formatTransaction(approvalData.tx, walletClient.chain)),
     );
 
     if (!transactionFuncs) return;
@@ -84,19 +85,19 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           ...routeQueryResponse.route,
           execute: executeRoute,
         },
-        approvals: routeQueryResponse.approvals?.map((approval: any) => ({
+        approvals: routeQueryResponse.approvals?.map((approval) => ({
           token: approval.token as `0x${string}`,
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
-          execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx)),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx, walletClient.chain)),
         })),
-        transfers: routeQueryResponse.transfers?.map((transfer: any) => ({
+        transfers: routeQueryResponse.transfers?.map((transfer) => ({
           token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,
           spender: transfer.spender,
-          execute: async () => walletClient?.sendTransaction(formatTransaction(transfer.tx)),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(transfer.tx, walletClient.chain)),
         })),
       };
     }

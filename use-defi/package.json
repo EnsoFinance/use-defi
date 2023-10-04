@@ -2,14 +2,14 @@
   "name": "@ensofinance/use-defi",
   "version": "0.2.3",
   "description": "React hooks library to use with enso shortcuts infrastructure",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "module": "index.esm.js",
+  "types": "index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.esm.js",
-      "types": "./dist/index.d.ts"
+      "require": "./index.js",
+      "import": "./index.esm.js",
+      "types": "./index.d.ts"
     }
   },
   "scripts": {

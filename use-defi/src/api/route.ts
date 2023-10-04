@@ -1,10 +1,9 @@
 import { Address } from 'viem';
 
-import { ENSO_API } from '../constants';
 import { API_RouteOptions, ExecutableRoute } from '../types/api';
-import { API_Response, BigNumberish } from '../types/enso';
+import { BigNumberish } from '../types/enso';
 import { manyBigIntParseToString } from '../utils/bigint';
-import { parseApiErrorOrReturn } from '../utils/parseApiError';
+import { apiFetchPost } from '../utils/fetch';
 
 export type QueryRouteOptions = {
   chainId: number;
@@ -59,16 +58,5 @@ export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise
 
   const actions = [routeAction];
 
-  const response = await fetch(`${ENSO_API}/api/v1/shortcuts/bundle?${new URLSearchParams(queryParams)}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${options.apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(actions),
-  });
-
-  const data = await response.json();
-
-  return parseApiErrorOrReturn(data);
+  return apiFetchPost('api/v1/shortcuts/bundle', actions, queryParams, options.apiKey);
 };
