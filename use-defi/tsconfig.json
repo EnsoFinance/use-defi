@@ -8,9 +8,8 @@
     }
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "test/**/*.ts",
+    "src/**/*",
+    "test/**/*",
     "vitest.config.ts"
   ]
 }

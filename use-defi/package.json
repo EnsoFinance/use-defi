@@ -15,7 +15,6 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "pnpm generate",
-    "lint": "pnpm eslint src/*",
     "test": "pnpm vitest run --root ./test --config ./vitest.config.ts",
     "generate": "npx openapi-typescript https://api.enso.finance/api-json -o src/generated/api.d.ts",
     "build": "pnpm generate && pnpm build:setup && rollup -c",
