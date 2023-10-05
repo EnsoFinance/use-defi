@@ -9,7 +9,7 @@
     "lint": "pnpm eslint .",
     "test": "pnpm vitest run --root ./use-defi/test --config ./vitest.config.ts",
     "generate": "npx openapi-typescript https://api.enso.finance/api-json -o use-defi/src/generated/api.d.ts",
-    "build": "pnpm generate && pnpm build:setup && rollup -c",
+    "build": "pnpm generate && pnpm build:setup && cd use-defi && rollup -c",
     "build:setup": "pnpm gts clean && cd use-defi && mkdir dist && jq 'del(.scripts) | del(.devDependencies) | del(.private) | del(.pnpm)' package.json > dist/package.json && cp README.md dist/README.md",
     "dev": "cd playground && vite dev"
   },
