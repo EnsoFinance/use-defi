@@ -23,4 +23,10 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': ['warn'],
     '@typescript-eslint/no-unsafe-assignment': 'off',
   },
+  overrides: [
+    {
+      files: ['src/**/*.ts', 'test/**/*.ts'],
+      excludedFiles: ['.eslintrc.cjs', 'package.json'],
+    },
+  ],
 };

@@ -3,13 +3,14 @@
   "compilerOptions": {
     "paths": {
       "@ensofinance/use-defi": [
-        "../use-defi/src/index.ts"
+        "./use-defi/src/index.ts"
       ]
     }
   },
   "include": [
     "src",
-    "../use-defi/src"
+    "../use-defi/src",
+    "vite.config.ts"
   ],
   "references": [
     {

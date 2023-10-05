@@ -1,13 +1,13 @@
 {
   "name": "use-defi-monorepo",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "React hooks library to use with enso shortcuts infrastructure",
   "main": "index.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "pnpm generate",
-    "lint": "pnpm eslint src/*",
-    "test": "pnpm vitest run --root ./test --config ./vitest.config.ts",
+    "lint": "pnpm eslint .",
+    "test": "pnpm vitest run --root ./use-defi/test --config ./vitest.config.ts",
     "generate": "npx openapi-typescript https://api.enso.finance/api-json -o use-defi/src/generated/api.d.ts",
     "build": "pnpm generate && pnpm build:setup && rollup -c",
     "build:setup": "pnpm gts clean && mkdir dist && jq 'del(.scripts) | del(.devDependencies) | del(.private) | del(.pnpm)' package.json > dist/package.json && cp README.md dist/README.md",

@@ -57,16 +57,16 @@ function App() {
           </div>
         )}
       </LoadingGuard>
-      <button onClick={executeMultichainRoute}>Execute Multichain Route</button>
+      <button onClick={() => executeMultichainRoute}>Execute Multichain Route</button>
       <LoadingGuard isLoading={executePositionStatus === 'loading'}>
         {hasRoute ? (
           <>
             <div className="code-block">Route found for shortcut. Click to run</div>
             <div>
               {!!executionDetails?.approvals?.length && (
-                <button onClick={executeApprovalsOrTransfers}>Run Approvals</button>
+                <button onClick={() => executeApprovalsOrTransfers}>Run Approvals</button>
               )}
-              <button onClick={executeRoute}>Run Transaction</button>
+              <button onClick={() => executeRoute}>Run Transaction</button>
               <br />
             </div>
           </>

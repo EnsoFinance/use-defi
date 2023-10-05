@@ -1,7 +1,16 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {},
+  "compilerOptions": {
+    "paths": {
+      "@ensofinance/use-defi": [
+        "./use-defi/src/index.ts"
+      ]
+    }
+  },
   "include": [
-    "**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "test/**/*.ts",
+    "vitest.config.ts"
   ]
 }
