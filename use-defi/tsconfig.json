@@ -8,13 +8,8 @@
     }
   },
   "include": [
-    "src",
-    "../use-defi/src",
-    "vite.config.ts"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
+    "src/**/*",
+    "test/**/*",
+    "vitest.config.ts"
   ]
 }

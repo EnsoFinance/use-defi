@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from 'wagmi';
 
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
+import { ApproveTransaction, TransferTransaction } from '../../types/api';
 import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
 import { useDeFiContext } from '../internal/useDeFiContext';
@@ -51,16 +52,17 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
     data: routeQueryResponse,
     status,
     error: routeQueryError,
-  } = useQuery('useExecuteShortcut', async () => queryRouteWithApprovals(queryOptions!), {
+  } = useQuery(['useExecuteShortcut'], async () => queryRouteWithApprovals(queryOptions!), {
     enabled: enabledQuery,
     staleTime: 1000 * 60 * 2,
     notifyOnChangeProps: ['data', 'error'],
   });
 
   const preparedTransaction = useMemo(() => {
-    if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route) return undefined;
-    return formatTransaction(routeQueryResponse.route.tx);
-  }, [routeQueryResponse]);
+    if (!routeQueryResponse || routeQueryResponse.status === 'error' || !routeQueryResponse.route || !walletClient)
+      return undefined;
+    return formatTransaction(routeQueryResponse.route.tx, walletClient?.chain);
+  }, [routeQueryResponse, walletClient]);
 
   const executeRoute = useCallback(async () => {
     if (!preparedTransaction) throw new Error('No route execution transaction available');
@@ -69,7 +71,8 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
-      (approvalData) => walletClient?.sendTransaction(formatTransaction(approvalData.tx)),
+      (approvalData: ApproveTransaction) =>
+        walletClient?.sendTransaction(formatTransaction(approvalData.tx, walletClient.chain)),
     );
 
     if (!transactionFuncs) return;
@@ -84,19 +87,19 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           ...routeQueryResponse.route,
           execute: executeRoute,
         },
-        approvals: routeQueryResponse.approvals?.map((approval) => ({
+        approvals: routeQueryResponse.approvals?.map((approval: ApproveTransaction) => ({
           token: approval.token as `0x${string}`,
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
-          execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx)),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx, walletClient.chain)),
         })),
-        transfers: routeQueryResponse.transfers?.map((transfer) => ({
+        transfers: routeQueryResponse.transfers?.map((transfer: TransferTransaction) => ({
           token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,
           spender: transfer.spender,
-          execute: async () => walletClient?.sendTransaction(formatTransaction(transfer.tx)),
+          execute: async () => walletClient?.sendTransaction(formatTransaction(transfer.tx, walletClient.chain)),
         })),
       };
     }

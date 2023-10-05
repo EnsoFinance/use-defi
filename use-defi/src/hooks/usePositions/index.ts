@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from 'wagmi';
 
 import { getEnsoApiPositions } from '../../api/positions';
 import { PoolPosition, Position } from '../../types/api';
@@ -17,7 +17,7 @@ type FilterType = (row: Position) => boolean;
  */
 
 export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
-  const { status, error, data } = useQuery('usePositions', getEnsoApiPositions);
+  const { status, error, data } = useQuery(['usePositions'], getEnsoApiPositions);
 
   const filteredData = useMemo(() => {
     const filters: FilterType[] = [];
@@ -41,7 +41,7 @@ export const usePositions = (args: UsePositionsArgs): UsePositionsPayload => {
     }
 
     if (data) {
-      return data.filter((metaPosition) => filters.every((filter) => filter(metaPosition)));
+      return data.filter((metaPosition: Position) => filters.every((filter) => filter(metaPosition)));
     }
 
     return [];

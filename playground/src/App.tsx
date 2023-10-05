@@ -1,4 +1,4 @@
-import { useExecutePosition, useMultichainRoute, usePositions } from '@ensofinance/use-defi';
+import { useCrossChainRoute, useExecutePosition, usePositions } from '@ensofinance/use-defi';
 import { parseUnits } from 'viem';
 
 import './App.css';
@@ -33,7 +33,7 @@ function App() {
     },
   });
 
-  const { execute: executeMultichainRoute } = useMultichainRoute({
+  const { execute: executeMultichainRoute } = useCrossChainRoute({
     tokenIn,
     tokenOut: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     destinationChainId: 1,
@@ -57,16 +57,16 @@ function App() {
           </div>
         )}
       </LoadingGuard>
-      <button onClick={executeMultichainRoute}>Execute Multichain Route</button>
+      <button onClick={() => executeMultichainRoute}>Execute Multichain Route</button>
       <LoadingGuard isLoading={executePositionStatus === 'loading'}>
         {hasRoute ? (
           <>
             <div className="code-block">Route found for shortcut. Click to run</div>
             <div>
               {!!executionDetails?.approvals?.length && (
-                <button onClick={executeApprovalsOrTransfers}>Run Approvals</button>
+                <button onClick={() => executeApprovalsOrTransfers}>Run Approvals</button>
               )}
-              <button onClick={executeRoute}>Run Transaction</button>
+              <button onClick={() => executeRoute}>Run Transaction</button>
               <br />
             </div>
           </>

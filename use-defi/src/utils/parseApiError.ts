@@ -1,6 +1,6 @@
 import { API_Error, API_Response } from '../types/enso';
 
-export function parseApiErrorOrReturn<T>(apiResponse: API_Response<T>) {
+export function parseApiErrorOrReturn<T>(apiResponse: API_Response<T>): T {
   const apiError = apiResponse as API_Error;
   if (apiError.message) {
     throw new Error(`Invalid Response from Enso API: ${apiError.error ?? apiError.message} (${apiError.statusCode})`);

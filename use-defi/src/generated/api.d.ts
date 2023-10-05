@@ -6,20 +6,12 @@
 
 export interface paths {
   "/api/v1/defiTokens": {
-    /** Returns defi tokens available to use in bundle shortcuts */
+    /** Returns defi tokens that have a yield, available to use at the /route endpoints. Includes underlying tokens, APYs, TVLs, and more. */
     get: operations["DefiTokensController_defiTokens"];
   };
   "/api/v1/baseTokens": {
-    /** Returns base tokens available to use in bundle shortcuts */
+    /** Returns base tokens available to use at the /route endpoint */
     get: operations["BaseTokensController_baseTokens"];
-  };
-  "/api/v1/tokenless-positions": {
-    /** Returns defi tokens available to use in bundle shortcuts */
-    get: operations["TokenlessPositionsController_tokenlessPositions"];
-  };
-  "/api/v1/positions": {
-    /** Returns defi tokens, base tokens and tokenless positions available to use in bundle shortcuts */
-    get: operations["PositionsController_positions"];
   };
   "/api/v1/networks": {
     /** Returns networks supported by the API */
@@ -28,6 +20,10 @@ export interface paths {
   "/api/v1/projects": {
     /** Returns projects and relevant protocols available to use in bundle shortcuts */
     get: operations["ProjectsController_projects"];
+  };
+  "/api/v1/prices/{chainId}/{address}": {
+    /** Returns price for defi token or base token */
+    get: operations["PricesController_getPrice"];
   };
   "/api/v1/actions": {
     /** Returns actions available to use in bundle shortcuts */
@@ -40,6 +36,8 @@ export interface paths {
   "/api/v1/shortcuts/route": {
     /** Best route from a token to another */
     get: operations["RouterController_routeShortcutTransaction"];
+    /** Best route from a token to another */
+    post: operations["RouterController_postRouteShortcutTransaction"];
   };
   "/api/v1/wallet": {
     /** Returns EnsoWallet address details */
@@ -60,7 +58,17 @@ export interface paths {
     /** Build a shortcut from multiple contract calls */
     post: operations["BuilderController_builderShortcutTransaction"];
   };
-  "/api/experimental/multichain/shortcut/route/{sourceChainId}/{destinationChainId}/{fromAddress}": {
+  "/api/v1/shortcuts/static/ipor": {
+    /** Get transaction for IPOR shortcut */
+    post: operations["IporController_iporShortcutTransaction"];
+  };
+  "/api/v1/shortcuts/quote": {
+    /** Quote from a token to another */
+    get: operations["QuoteController_quote"];
+    /** Simulate a route */
+    post: operations["QuoteController_quoteMultipath"];
+  };
+  "/api/experimental/multichain/shortcut/route": {
     post: operations["SocketController_multichainRouteShortcutTransactionWithSocket"];
   };
 }
@@ -93,7 +101,7 @@ export interface components {
        *   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
        * ]
        */
-      underlyingPoolTokens: string[];
+      underlyingTokens: string[];
     };
     Protocol: {
       /** @example lido */
@@ -141,7 +149,7 @@ export interface components {
       token?: components["schemas"]["PoolToken"];
       tokenAddress: string;
       tvl: number;
-      underlyingPoolTokens: string[];
+      underlyingTokens: string[];
       project: string;
       protocol: components["schemas"]["Protocol"];
     };
@@ -159,47 +167,6 @@ export interface components {
       /** @example 1 */
       chainId: number;
     };
-    TokenlessPosition: {
-      /** @example 1 */
-      apy: number | null;
-      /** @example 1 */
-      apyBase: number | null;
-      /** @example 1.1 */
-      apyReward: number | null;
-      /** @example 1 */
-      chainId: number;
-      /** @example 0x777777c9898d384f785ee44acfe945efdff5f3e0:0xae7ab96520de3a18e5e111b5eaab095312d7fe84 */
-      id: string;
-      /** @example Staked stETH */
-      name: string;
-      /** @example 0x777777c9898D384F785Ee44Acfe945efDFf5f3E0 */
-      poolAddress: string;
-      /** @example 0x777777c9898D384F785Ee44Acfe945efDFf5f3E0 */
-      primaryAddress: string;
-      /** @example stETH */
-      subtitle: string;
-      /** @example [] */
-      rewardTokens: string[];
-      /** @example 1125651358 */
-      tvl: number;
-      /**
-       * @example [
-       *   "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
-       * ]
-       */
-      underlyingTokens: string[];
-      /** @example morpho-aave */
-      project: string;
-      protocol: components["schemas"]["Protocol"];
-    };
-    Position: {
-      /** @example [] */
-      tokenlessPositions: components["schemas"]["TokenlessPosition"][];
-      /** @example [] */
-      baseTokens: components["schemas"]["BaseToken"][];
-      /** @example [] */
-      defiTokens: components["schemas"]["DefiToken"][];
-    };
     Network: {
       /** @example 1 */
       id: number;
@@ -213,19 +180,48 @@ export interface components {
       id: string;
       /** @example compound */
       protocol: string;
-      /** @example 10 */
-      chain: number;
+      /**
+       * @example [
+       *   1,
+       *   10
+       * ]
+       */
+      chainIds: string;
+      /** @example Test Description */
+      description: string;
+      /** @example @handle */
+      twitter: string;
+      /** @example Lending */
+      category: string;
+      /** @example 523 */
+      poolCount: number;
+    };
+    Price: {
+      /** @example 8 */
+      decimals: number;
+      /** @example 27052 */
+      price: number;
+      /** @example 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599 */
+      address: string;
+      /** @example WBTC */
+      symbol: string;
+      /** @example 0.99 */
+      confidence: number;
+      /** @example 1695197412 */
+      timestamp: number;
+      /** @example 1 */
+      chainId: number;
     };
     Action: {
       /** @enum {string} */
-      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route";
+      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route" | "split";
       inputs: {
         [key: string]: string | undefined;
       };
     };
     StandardAction: {
       /** @enum {string} */
-      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route";
+      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route" | "split";
       inputs: {
         [key: string]: string | undefined;
       };
@@ -240,12 +236,13 @@ export interface components {
     };
     Hop: {
       tokenIn: string[];
-      positionInId: Record<string, never>;
+      positionInId: string[];
       tokenOut: string[];
-      positionOutId: Record<string, never>;
+      positionOutId: string[];
       protocol: string;
       action: string;
       primary: string;
+      internalRoutes: string[];
     };
     Transaction: {
       data: string;
@@ -257,13 +254,71 @@ export interface components {
       /** @description The route the shortcut will use */
       route: components["schemas"]["Hop"][];
       gas: number;
-      amountOut: Record<string, never>;
+      amountOut: string[];
       /** @description Price impact in basis points, null if USD price not found */
       priceImpact: number;
       /** @description Block number the transaction was created on */
       createdAt: number;
       /** @description The tx object to use in `ethers` */
       tx: components["schemas"]["Transaction"];
+    };
+    RouteShortcutInputs: {
+      /**
+       * @description Chain ID of the network to execute the transaction on
+       * @default 1
+       */
+      chainId?: number;
+      /**
+       * @description Ethereum address of the wallet to send the transaction from
+       * @default 0xd8da6bf26964af9d7eed9e03e53415d37aa96045
+       */
+      fromAddress: string;
+      /** @description Flag that indicates whether to calculate and return the price impact of the transaction */
+      priceImpact?: boolean | null;
+      /**
+       * @deprecated
+       * @description Flag that indicates if gained tokenOut should be sent to EOA
+       */
+      toEoa?: boolean | null;
+      /**
+       * @description Ethereum address of the receiver of the tokenOut
+       * @example 0xd8da6bf26964af9d7eed9e03e53415d37aa96045
+       */
+      receiver?: string;
+      /**
+       * @description Amount of tokenIn to swap in wei
+       * @example [
+       *   "1000000000000000000"
+       * ]
+       */
+      amountIn: string[];
+      /**
+       * @description Minimum amount out in wei. If specified, slippage should not be specified
+       * @example [
+       *   "1000000000000000000"
+       * ]
+       */
+      minAmountOut?: string[];
+      /**
+       * @description Slippage in basis points (1/10000). If specified, minAmountOut should not be specified
+       * @default 300
+       * @example 300
+       */
+      slippage?: string;
+      /**
+       * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example [
+       *   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+       * ]
+       */
+      tokenIn: string[];
+      /**
+       * @description Ethereum address of the token to swap to. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example [
+       *   "0x6b175474e89094c44da98b954eedeac495271d0f"
+       * ]
+       */
+      tokenOut: string[];
     };
     Wallet: {
       address: string;
@@ -281,10 +336,10 @@ export interface components {
       /** @description The spender address to approve */
       spender: string;
     };
-    ActionsToBundle: {
+    ActionToBundle: {
       protocol: string;
       /** @enum {string} */
-      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route";
+      action: "approve" | "borrow" | "deposit" | "harvest" | "permittransferfrom" | "redeem" | "repay" | "apiswap" | "swap" | "transfer" | "transferfrom" | "withdraw" | "route" | "split";
       args: Record<string, never>;
     };
     CallsToBuild: {
@@ -333,20 +388,106 @@ export interface components {
        */
       calls: components["schemas"]["CallsToBuild"][];
     };
-    MultichainRouteShortcutInputsBase: {
+    IporShortcutInput: {
       /**
-       * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @description Amount of tokenIn in wei
+       * @example 1000000000000000
+       */
+      amountIn: string;
+      /**
+       * @description Address of the tokenIn. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
        * @example 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
        */
       tokenIn: string;
       /**
-       * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-       * @example 0x6b175474e89094c44da98b954eedeac495271d0f
+       * @description Address of the tokenBToBuy
+       * @example 0x0e6c016417A0108b76E35939EE7F8F922a4Ef638
        */
+      tokenBToBuy: string;
+      /**
+       * @description Percentage of tokenB to buy in basis points (1/10000)
+       * @example 5000
+       */
+      percentageForTokenB: string;
+      /**
+       * @description Slippage in basis points (1/10000). Default is 300
+       * @default 300
+       * @example 300
+       */
+      slippage?: string;
+    };
+    IporShortcutTransaction: {
+      /** @description Block number the transaction was created on */
+      createdAt: number;
+      /** @description The tx object to use in `ethers` */
+      tx: components["schemas"]["Transaction"];
+    };
+    Step: {
+      tokenIn: string;
       tokenOut: string;
+      protocol: string;
+      action: string;
+      primary: string;
+    };
+    Path: {
       /**
        * @description Amount of tokenIn to swap in wei
-       * @example "1000000000000000000"
+       * @example 1000000000000000000
+       */
+      amountIn: string;
+      /** @description Ordered array of steps to build */
+      path: components["schemas"]["Step"][];
+    };
+    QuoteRouteInputs: {
+      /**
+       * @description Chain ID of the network to execute the transaction on
+       * @default 1
+       */
+      chainId?: number;
+      /**
+       * @description Ethereum address of the wallet to send the transaction from
+       * @example 0xd8da6bf26964af9d7eed9e03e53415d37aa96045
+       */
+      fromAddress?: string;
+      /** @description Ordered array of paths that you want to simulate */
+      route: components["schemas"]["Path"][];
+    };
+    Quote: {
+      /** @description The route the shortcut will use */
+      route: components["schemas"]["Hop"][];
+      gas: number;
+      amountOut: string[];
+      /** @description Price impact in basis points, null if USD price not found */
+      priceImpact: number;
+    };
+    MultichainRouteShortcutInputsIn: {
+      /**
+       * @description Chain ID of the token to swap from
+       * @example 42161
+       */
+      sourceChainId: number;
+      /**
+       * @description Address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       */
+      token: string;
+    };
+    MultichainRouteShortcutInputsOut: {
+      /**
+       * @description Chain ID of the token to swap to
+       * @example 1
+       */
+      destinationChainId: number;
+      /**
+       * @description Address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+       * @example 0xae7ab96520de3a18e5e111b5eaab095312d7fe84
+       */
+      token: string;
+    };
+    MultichainRouteShortcutInputsBase: {
+      /**
+       * @description Amount of tokenIn to swap in wei
+       * @example 1000000000000000000
        */
       amountIn: string;
       /**
@@ -355,6 +496,27 @@ export interface components {
        * @example 300
        */
       slippage?: string;
+      /**
+       * @description Address and chain of the token to swap from
+       * @example {
+       *   "sourceChainId": 42161,
+       *   "token": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+       * }
+       */
+      in: components["schemas"]["MultichainRouteShortcutInputsIn"];
+      /**
+       * @description Address and chain of the token to swap to
+       * @example {
+       *   "destinationChainId": 1,
+       *   "token": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84"
+       * }
+       */
+      out: components["schemas"]["MultichainRouteShortcutInputsOut"];
+      /**
+       * @description Address of the user
+       * @example 0x93621DCA56fE26Cdee86e4F6B18E116e9758Ff11
+       */
+      fromAddress: string;
     };
   };
   responses: never;
@@ -368,7 +530,7 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  /** Returns defi tokens available to use in bundle shortcuts */
+  /** Returns defi tokens that have a yield, available to use at the /route endpoints. Includes underlying tokens, APYs, TVLs, and more. */
   DefiTokensController_defiTokens: {
     parameters: {
       query?: {
@@ -379,22 +541,22 @@ export interface operations {
         underlyingAddress?: unknown;
         /**
          * @description Address of the token to search for
-         * @example 0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84
+         * @example 0xc4AD29ba4B3c580e6D59105FFf484999997675Ff
          */
         tokenAddress?: unknown;
         /**
          * @description Protocol of the token to search for
-         * @example lido
+         * @example curve-dex
          */
         protocol?: unknown;
         /**
          * @description Project of the token to search for
-         * @example lido
+         * @example curve-dex
          */
         project?: unknown;
         /**
          * @description Symbol of the token to search for
-         * @example stETH
+         * @example crv3crypto
          */
         symbol?: unknown;
         /**
@@ -412,10 +574,15 @@ export interface operations {
       };
     };
   };
-  /** Returns base tokens available to use in bundle shortcuts */
+  /** Returns base tokens available to use at the /route endpoint */
   BaseTokensController_baseTokens: {
     parameters: {
-      query?: {
+      query: {
+        /**
+         * @description Address of the token to search for
+         * @example 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+         */
+        address: unknown;
         /**
          * @description Symbol of the token to search for
          * @example USDC
@@ -437,86 +604,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["BaseToken"][];
-        };
-      };
-    };
-  };
-  /** Returns defi tokens available to use in bundle shortcuts */
-  TokenlessPositionsController_tokenlessPositions: {
-    parameters: {
-      query?: {
-        /**
-         * @description Address of an underlying token
-         * @example 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
-         */
-        underlyingAddress?: unknown;
-        /**
-         * @description Address of the pool to search for
-         * @example 0x777777c9898D384F785Ee44Acfe945efDFf5f3E0
-         */
-        poolAddress?: unknown;
-        /**
-         * @description Protocol of the position to search for
-         * @example morpho-aave
-         */
-        protocol?: unknown;
-        /**
-         * @description Project of the position to search for
-         * @example morpho-aave
-         */
-        project?: unknown;
-        /**
-         * @description Name of the position to search for
-         * @example 0x
-         */
-        name?: unknown;
-        /**
-         * @description Chain ID of the position to search for
-         * @example 1
-         */
-        chainId?: unknown;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["TokenlessPosition"][];
-        };
-      };
-    };
-  };
-  /** Returns defi tokens, base tokens and tokenless positions available to use in bundle shortcuts */
-  PositionsController_positions: {
-    parameters: {
-      query?: {
-        /**
-         * @description Chain ID of the position to search for
-         * @example 1
-         */
-        chainId?: unknown;
-        /** @description Address of the token to search for */
-        tokenAddress?: unknown;
-        /** @description Address of the pool to search for */
-        poolAddress?: unknown;
-        /** @description Protocol of the position to search for */
-        protocol?: unknown;
-        /** @description Project of the position to search for */
-        project?: unknown;
-        /**
-         * @description Symbol of the token to search for
-         * @example stETH
-         */
-        symbol?: unknown;
-        /** @description Address of one of the underlying */
-        underlyingAddress?: unknown;
-        /** @description Name of the entity */
-        name?: unknown;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["Position"][];
         };
       };
     };
@@ -561,7 +648,7 @@ export interface operations {
         id?: unknown;
         /**
          * @description Title of the project to search for
-         * @example Aave v3
+         * @example aave-v3
          */
         title?: unknown;
         /**
@@ -575,6 +662,30 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Project"][];
+        };
+      };
+    };
+  };
+  /** Returns price for defi token or base token */
+  PricesController_getPrice: {
+    parameters: {
+      path: {
+        /**
+         * @description Address of the token to search for
+         * @example 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+         */
+        address: unknown;
+        /**
+         * @description Chain ID of the network to search for
+         * @example 1
+         */
+        chainId: unknown;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Price"];
         };
       };
     };
@@ -605,32 +716,32 @@ export interface operations {
       query: {
         /** @description Chain ID of the network to execute the transaction on */
         chainId?: number;
+        /** @description Ethereum address of the wallet to send the transaction from */
+        fromAddress: string;
+        /** @description Flag that indicates whether to calculate and return the price impact of the transaction */
+        priceImpact?: boolean | null;
         /**
-         * @description Ethereum address of the wallet to send the transaction from
+         * @deprecated
+         * @description Flag that indicates if gained tokenOut should be sent to EOA
+         */
+        toEoa?: boolean | null;
+        /**
+         * @description Ethereum address of the receiver of the tokenOut
          * @example 0xd8da6bf26964af9d7eed9e03e53415d37aa96045
          */
-        fromAddress: string;
+        receiver?: string;
         /**
-         * @description Amount of tokenIn that needs to be approved to the wallet before the transaction in wei
+         * @description Amount of tokenIn to swap in wei
          * @example [
          *   "1000000000000000000"
          * ]
          */
-        tokenInAmountToApprove?: string[];
-        /** @description Amount of tokenIn that needs to be transferred to the wallet before the transaction in wei */
-        tokenInAmountToTransfer?: string[];
-        /** @description Flag that indicates whether to calculate and return the price impact of the transaction */
-        priceImpact?: boolean | null;
-        /** @description Flag that indicates if gained tokenOut should be sent to EOA */
-        toEoa?: boolean | null;
-        /**
-         * @description Amount of tokenIn to swap in wei
-         * @example 1000000000000000000
-         */
         amountIn: string[];
         /**
          * @description Minimum amount out in wei. If specified, slippage should not be specified
-         * @example 1000000000000000000
+         * @example [
+         *   "1000000000000000000"
+         * ]
          */
         minAmountOut?: string[];
         /**
@@ -640,14 +751,34 @@ export interface operations {
         slippage?: string;
         /**
          * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-         * @example 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+         * @example [
+         *   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+         * ]
          */
         tokenIn: string[];
         /**
-         * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-         * @example 0x6b175474e89094c44da98b954eedeac495271d0f
+         * @description Ethereum address of the token to swap to. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+         * @example [
+         *   "0x6b175474e89094c44da98b954eedeac495271d0f"
+         * ]
          */
         tokenOut: string[];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["RouteShortcutTransaction"];
+        };
+      };
+      400: never;
+    };
+  };
+  /** Best route from a token to another */
+  RouterController_postRouteShortcutTransaction: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RouteShortcutInputs"];
       };
     };
     responses: {
@@ -725,7 +856,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ActionsToBundle"][];
+        "application/json": components["schemas"]["ActionToBundle"][];
       };
     };
     responses: {
@@ -751,14 +882,86 @@ export interface operations {
       201: never;
     };
   };
-  SocketController_multichainRouteShortcutTransactionWithSocket: {
+  /** Get transaction for IPOR shortcut */
+  IporController_iporShortcutTransaction: {
     parameters: {
-      path: {
-        sourceChainId: number;
-        destinationChainId: number;
+      query: {
+        /** @description Chain ID of the network to execute the transaction on */
+        chainId?: number;
+        /** @description Ethereum address of the wallet to send the transaction from */
         fromAddress: string;
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["IporShortcutInput"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["IporShortcutTransaction"];
+        };
+      };
+    };
+  };
+  /** Quote from a token to another */
+  QuoteController_quote: {
+    parameters: {
+      query: {
+        /** @description Chain ID of the network to execute the transaction on */
+        chainId?: number;
+        /**
+         * @description Ethereum address of the wallet to send the transaction from
+         * @example 0xd8da6bf26964af9d7eed9e03e53415d37aa96045
+         */
+        fromAddress?: string;
+        /**
+         * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+         * @example [
+         *   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+         * ]
+         */
+        tokenIn: string[];
+        /**
+         * @description Ethereum address of the token to swap from. For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+         * @example [
+         *   "0x6b175474e89094c44da98b954eedeac495271d0f"
+         * ]
+         */
+        tokenOut: string[];
+        /**
+         * @description Amount of tokenIn to swap in wei
+         * @example [
+         *   "1000000000000000000"
+         * ]
+         */
+        amountIn: string[];
+        /** @description Flag that indicates whether to calculate and return the price impact of the transaction */
+        priceImpact?: boolean | null;
+      };
+    };
+    responses: {
+      200: never;
+    };
+  };
+  /** Simulate a route */
+  QuoteController_quoteMultipath: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["QuoteRouteInputs"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Quote"];
+        };
+      };
+      400: never;
+    };
+  };
+  SocketController_multichainRouteShortcutTransactionWithSocket: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["MultichainRouteShortcutInputsBase"];

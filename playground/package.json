@@ -1,0 +1,14 @@
+{
+  "name": "playground",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev"
+  },
+  "devDependencies": {
+    "vite": "^4.4.0"
+  },
+  "dependencies": {
+    "@ensofinance/use-defi": "workspace:^",
+    "util": "^0.12.4"
+  }
+}

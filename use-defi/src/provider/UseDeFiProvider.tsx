@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useMemo } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { useWalletClient, WalletClient } from 'wagmi';
 
 export interface UseDeFiContextType {
@@ -14,8 +13,6 @@ export interface UseDeFiContextProviderProps {
   apiKey?: string;
   walletClient?: WalletClient;
 }
-
-const queryClient = new QueryClient();
 
 export default function UseDeFiProvider({ children, walletClient, apiKey }: UseDeFiContextProviderProps) {
   const fallbackWalletClientQuery = useWalletClient();
@@ -37,9 +34,5 @@ export default function UseDeFiProvider({ children, walletClient, apiKey }: UseD
     };
   }, [walletClient, fallbackWalletClientQuery, apiKey]);
 
-  return (
-    <UseDeFiContext.Provider value={providerState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </UseDeFiContext.Provider>
-  );
+  return <UseDeFiContext.Provider value={providerState}>{children}</UseDeFiContext.Provider>;
 }

@@ -1,12 +1,9 @@
-import axios from 'axios';
-import queryString from 'query-string';
 import { Address } from 'viem';
 
-import { ENSO_API } from '../constants';
 import { API_RouteOptions, ExecutableRoute } from '../types/api';
-import { API_Response, BigNumberish } from '../types/enso';
+import { BigNumberish } from '../types/enso';
 import { manyBigIntParseToString } from '../utils/bigint';
-import { parseApiErrorOrReturn } from '../utils/parseApiError';
+import { apiFetchPost } from '../utils/fetch';
 
 export type QueryRouteOptions = {
   chainId: number;
@@ -22,7 +19,7 @@ export type QueryRouteResponse = ExecutableRoute;
 
 export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise<QueryRouteResponse | undefined> => {
   const queryParams = {
-    chainId: options.chainId,
+    chainId: String(options.chainId),
     fromAddress: options.fromAddress,
   };
 
@@ -61,16 +58,5 @@ export const getEnsoApiBundleRoute = async (options: QueryRouteOptions): Promise
 
   const actions = [routeAction];
 
-  const { data } = await axios.post<API_Response<QueryRouteResponse>>(
-    `${ENSO_API}/api/v1/shortcuts/bundle?${queryString.stringify(queryParams)}`,
-    JSON.stringify(actions),
-    {
-      headers: {
-        Authorization: `Bearer ${options.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    },
-  );
-
-  return parseApiErrorOrReturn(data);
+  return apiFetchPost('api/v1/shortcuts/bundle', actions, queryParams, options.apiKey);
 };
