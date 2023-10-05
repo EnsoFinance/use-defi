@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useQuery } from 'wagmi';
 
 import { queryRouteWithApprovals, QueryRouteWithApprovalsOptions } from '../../queries/route';
+import { ApproveTransaction, TransferTransaction } from '../../types/api';
 import { formatTransaction } from '../../utils/formatTransaction';
 import { getTokenAddressFromPosition } from '../../utils/position';
 import { useDeFiContext } from '../internal/useDeFiContext';
@@ -70,7 +71,8 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
 
   const executeApprovalsOrTransfers = useCallback(() => {
     const transactionFuncs = routeQueryResponse?.approvals?.map(
-      (approvalData) => walletClient?.sendTransaction(formatTransaction(approvalData.tx, walletClient.chain)),
+      (approvalData: ApproveTransaction) =>
+        walletClient?.sendTransaction(formatTransaction(approvalData.tx, walletClient.chain)),
     );
 
     if (!transactionFuncs) return;
@@ -85,14 +87,14 @@ export const useExecutePosition = (args?: UseExecutePositionArgs): UseExecuteSho
           ...routeQueryResponse.route,
           execute: executeRoute,
         },
-        approvals: routeQueryResponse.approvals?.map((approval) => ({
+        approvals: routeQueryResponse.approvals?.map((approval: ApproveTransaction) => ({
           token: approval.token as `0x${string}`,
           amount: approval.amount,
           gas: approval.gas,
           spender: approval.spender,
           execute: async () => walletClient?.sendTransaction(formatTransaction(approval.tx, walletClient.chain)),
         })),
-        transfers: routeQueryResponse.transfers?.map((transfer) => ({
+        transfers: routeQueryResponse.transfers?.map((transfer: TransferTransaction) => ({
           token: transfer.token as `0x${string}`,
           amount: transfer.amount,
           gas: transfer.gas,
